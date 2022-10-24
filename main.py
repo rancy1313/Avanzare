@@ -1,6 +1,6 @@
-from avanzareApp import initialize_app
+from avanzareApp import create_app
 
-app = initialize_app()
+app = create_app()
 
 if __name__ == '__main__':
    app.secret_key = 'super secret key'
