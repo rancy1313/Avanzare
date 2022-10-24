@@ -12,9 +12,16 @@ auth = Blueprint('auth', __name__)
 
 # @auth.route('hello')
 #@auth.route()
+
+
 @auth.route('/start_page', methods=['GET'])
 def start_page():
     return render_template("start_page.html", user=current_user)
+
+
+@auth.route('edit_menu', methods=['GET', 'POST'])
+def edit_menu():
+    return render_template("edit_menu.html")
 
 
 # type url 127.0.0.1:5000/login
@@ -27,7 +34,7 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if email == "headChef@gmail.com" and password == "pasta123":
-            print("Hello Head chef")
+            return render_template("edit_menu.html")
 
         if user:
             if check_password_hash(user.password, password):
