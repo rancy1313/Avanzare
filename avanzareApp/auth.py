@@ -58,7 +58,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.start_page'))
 
 #sign-up is a POST request because you're adding an account
 # type url 127.0.0.1:5000/sign-up
