@@ -11,7 +11,7 @@
     SALADS
   </li>
   <li>
-    Pizzas
+    PIZZAS
   </li>
   <li>
     PASTAS
@@ -32,4 +32,18 @@
     AFTER DINNER DRINKS
   </li>
 </ul>
+
+<h1 align="center">Menu</h1>
+        <ul class="list-group list-group-flush" id="items">
+          {% for item in items %}
+              <li class="list-group-item">
+                  {{ item.name }}
+                  {{ item.price }}
+                  <br />
+                  {{ item.description }}
+              </li>
+          {% endfor %}
+        </ul>
+
 {% endblock %}
+

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
+from .models import User, Menu
 from werkzeug.security import generate_password_hash, check_password_hash
 from .import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -16,12 +16,14 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/start_page', methods=['GET'])
 def start_page():
-    return render_template("start_page.html", user=current_user)
+    items = Menu.query.filter_by(user_id=4).order_by(Menu.name).all()
+    return render_template("start_page.html", items=items, user=current_user)
 
-
-@auth.route('edit_menu', methods=['GET', 'POST'])
+'''
+@auth.route('/edit_menu', methods=['GET', 'POST'])
 def edit_menu():
-    return render_template("edit_menu.html")
+
+    return render_template("edit_menu.html", user=current_user)'''
 
 
 # type url 127.0.0.1:5000/login
@@ -34,7 +36,8 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if email == "headChef@gmail.com" and password == "pasta123":
-            return render_template("edit_menu.html")
+            login_user(user, remember=True)
+            return redirect(url_for('views.add_menu_item'))
 
         if user:
             if check_password_hash(user.password, password):

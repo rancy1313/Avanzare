@@ -15,6 +15,8 @@
       crossorigin="anonymous"
     />
     <title>We edit the menu in this page</title>
+
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -28,35 +30,105 @@
         </div>
     </nav>
 
-    <div align="center">MENU</div>
-    <ul>
-      <li>
-        APPETIZERS
-      </li>
-      <li>
-        SALADS
-      </li>
-      <li>
-        Pizzas
-      </li>
-      <li>
-        PASTAS
-      </li>
-      <li>
-        ENTREES
-      </li>
-      <li>
-        SIDES
-      </li>
-      <li>
-        DESSERTS
-      </li>
-      <li>
-        BEER
-      </li>
-      <li>
-        AFTER DINNER DRINKS
-      </li>
-    </ul>
+    {% block content %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'error' %}
+                <div class="alert alert-danger alter-dismissable fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% else %}
+                <div class="alert alert-success alter-dismissable fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+<form method="POST">
+    <h3 align="center">Add an item to the menu</h3>
+    <div class="form-group">
+        <label for="name">Dish Name</label>
+        <input
+                type="name"
+                class="form-control"
+                id="name"
+                name="name"
+                placeholder="ENTER DISH NAME"
+        />
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input
+                type="price"
+                class="form-control"
+                id="price"
+                name="price"
+                placeholder="ENTER DISH PRICE"
+        />
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input
+                type="description"
+                class="form-control"
+                id="description"
+                name="description"
+                placeholder="ENTER DISH DESCRIPTION"
+        />
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Add Item</button>
+</form>
+
+
+    <h1 align="center">Menu</h1>
+        <ul class="list-group list-group-flush" id="items">
+          {% for item in user.items %}
+              <li class="list-group-item">
+                  {{ item.name }}
+                  {{ item.price }}
+                  {{ user.id }}
+                  <br />
+                  {{ item.description }}
+                <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </li>
+          {% endfor %}
+        </ul>
+
+
+{% endblock %}
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='index.js') }}"
+    ></script>
 </body>
 </html>

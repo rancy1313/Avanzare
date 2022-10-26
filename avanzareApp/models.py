@@ -15,6 +15,15 @@ class Note(db.Model):
     # thats why it is user.id and not User.id
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+class Menu(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True)
+    price = db.Column(db.String(150))
+    description = db.Column(db.String(10000))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
 class User(db.Model, UserMixin):
     # most cases you'll use columns
     # id is an integer and is the primary key to identifying a user
@@ -27,3 +36,5 @@ class User(db.Model, UserMixin):
     # kind of like a list that stores the user's notes
     # for some reason Note is capital here sql be funky
     notes = db.relationship('Note')
+    items = db.relationship('Menu')
+
