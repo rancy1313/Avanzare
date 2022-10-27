@@ -14,6 +14,7 @@ def add_menu_item():
         name = request.form.get('name')
         price = request.form.get('price')
         description = request.form.get('description')
+        menu_type = request.form.get('menu_type')
 
 
         menu_item = Menu.query.filter_by(name=name).first()
@@ -25,7 +26,7 @@ def add_menu_item():
             #flash('Description must be less than 10,000 characters.', category="error")
         else:
             # add the user
-            new_menu_item = Menu(name=name, price=price, description=description, user_id=current_user.id)
+            new_menu_item = Menu(name=name, price=price, description=description, menu_type=menu_type, user_id=current_user.id)
             db.session.add(new_menu_item)
             db.session.commit()
             #login_user(user, remember=True)
@@ -67,7 +68,7 @@ def delete_item():
     item = json.loads(request.data)
     itemId = item['itemId']
     item = Menu.query.get(itemId)
-    print(item)
+
     if item:
         if item.user_id == current_user.id:
             db.session.delete(item)
@@ -76,7 +77,4 @@ def delete_item():
     else:
         flash('error!', category="error")
     return jsonify({})
-
-
-
 

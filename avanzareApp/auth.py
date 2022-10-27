@@ -16,7 +16,8 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/start_page', methods=['GET'])
 def start_page():
-    items = Menu.query.filter_by(user_id=4).order_by(Menu.name).all()
+    user = User.query.filter(User.email=='headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     return render_template("start_page.html", items=items, user=current_user)
 
 '''
@@ -58,7 +59,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.start_page'))
 
 #sign-up is a POST request because you're adding an account
 # type url 127.0.0.1:5000/sign-up
