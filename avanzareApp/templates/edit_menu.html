@@ -87,6 +87,27 @@
         />
     </div>
 
+    <div>Menu Type</div>
+    <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
+      <optgroup label="DINNER MENU" >
+        <option>APPETIZERS</option>
+        <option>SALADS</option>
+        <option>PASTAS</option>
+        <option>ENTREES</option>
+        <option>SIDES</option>
+      </optgroup>
+
+      <option>DESSERT MENU</option>
+      <option>AFTER DINNER DRINKS</option>
+      <option>COCKTAILS</option>
+      <optgroup label="BEER">
+        <option>BOTTLE</option>
+        <option>DRAFT</option>
+      </optgroup>
+    </select>
+
+
+    <br />
     <br />
     <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
@@ -96,9 +117,10 @@
         <ul class="list-group list-group-flush" id="items">
           {% for item in user.items %}
               <li class="list-group-item">
+                  {{ item.menu_type }}
+                  <br />
                   {{ item.name }}
                   {{ item.price }}
-                  {{ user.id }}
                   <br />
                   {{ item.description }}
                 <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">

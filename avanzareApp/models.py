@@ -20,6 +20,7 @@ class Menu(db.Model):
     name = db.Column(db.String(150), unique=True)
     price = db.Column(db.String(150))
     description = db.Column(db.String(10000))
+    menu_type = db.Column(db.String(150))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
