@@ -92,6 +92,7 @@
       <optgroup label="DINNER MENU" >
         <option>APPETIZERS</option>
         <option>SALADS</option>
+        <option>PIZZAS</option>
         <option>PASTAS</option>
         <option>ENTREES</option>
         <option>SIDES</option>
@@ -130,6 +131,75 @@
           {% endfor %}
         </ul>
 
+    <h1 align="center"> DINNER MENU </h1>
+        <ul class="list-group list-group-flush" id="items">
+            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
+            {% set print_once = 1 %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES"] %}
+                {% if print_once == 1 %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for item in items %}
+                    {% if item.menu_type == menu %}
+                      <li class="list-group-item">
+                          {{ item.name }}
+                          {{ item.price }}
+                          <br />
+                          {{ item.description }}
+
+                          <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+        </ul>
+
+<h1 align="center"> COCKTAILS </h1>
+        <ul class="list-group list-group-flush" id="items">
+          {% for item in items %}
+                {% if item.menu_type == "COCKTAILS" %}
+                  <li class="list-group-item">
+                      {{ item.name }}
+                      {{ item.price }}
+                      <br />
+                      {{ item.description }}
+                      <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                  </li>
+                {% endif %}
+
+          {% endfor %}
+        </ul>
+
+<h1 align="center"> BEER </h1>
+        <ul class="list-group list-group-flush" id="items">
+            {% set BEER_sub_menus = ["BOTTLE", "DRAFT"] %}
+            {% set print_once = 1 %}
+            {% for menu in BEER_sub_menus %}
+                {% if print_once == 1 %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for item in items %}
+                    {% if item.menu_type == menu %}
+                      <li class="list-group-item">
+                          {{ item.name }}
+                          {{ item.price }}
+                          <br />
+                          {{ item.description }}
+                          <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
 
 {% endblock %}
 

@@ -10,6 +10,7 @@ views = Blueprint('views', __name__)
 @views.route('/add-menu-item', methods=['GET', 'POST'])
 @login_required
 def add_menu_item():
+
     if request.method == 'POST':
         name = request.form.get('name')
         price = request.form.get('price')
@@ -31,9 +32,14 @@ def add_menu_item():
             db.session.commit()
             #login_user(user, remember=True)
             flash('New item added to menu!!!', category="success")
-            return render_template("edit_menu.html", user=current_user)
+            user = User.query.filter(User.email == 'headChef@gmail.com').first()
+            items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+            return render_template("edit_menu.html", items=items, user=current_user)
+        # this is needed just in case to show items just in case add item gets error
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
 
-    return render_template("edit_menu.html", user=current_user)
+    return render_template("edit_menu.html", items=items, user=current_user)
 
 #decorator
 @views.route('/', methods=['GET', 'POST'])
