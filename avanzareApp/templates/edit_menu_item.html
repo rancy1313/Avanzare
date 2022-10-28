@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <title>Edit menu items here</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar">
+            <div class="navbar-nav">
+                    <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+{% block content %}
+<form method="POST">
+    <h3 align="center">Edit menu information</h3>
+
+    <div>Edit Name: {{item.name}}</div>
+    <textarea   type="name"
+                class="form-control"
+                id="name"
+                name="name">{{item.name}}</textarea>
+
+    <div>Edit Price: {{item.price}}</div>
+    <textarea   type="price"
+                class="form-control"
+                id="price"
+                name="price">{{item.price}}</textarea>
+
+    <br />
+    <div>Edit Description: {{item.description}}</div>
+    <textarea   type="description"
+                class="form-control"
+                id="description"
+                name="description">{{item.description}}</textarea>
+
+    <div>Menu Type: {{ item.menu_type }}</div>
+    <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
+      <optgroup label="DINNER MENU" >
+        <option>APPETIZERS</option>
+        <option>SALADS</option>
+        <option>PIZZAS</option>
+        <option>PASTAS</option>
+        <option>ENTREES</option>
+        <option>SIDES</option>
+      </optgroup>
+
+      <option>DESSERT MENU</option>
+      <option>AFTER DINNER DRINKS</option>
+      <option>COCKTAILS</option>
+      <optgroup label="BEER">
+        <option>BOTTLE</option>
+        <option>DRAFT</option>
+      </optgroup>
+    </select>
+    <br />
+    <br />
+    <button type="submit" class="btn btn-primary">Edit Item</button>
+
+</form>
+
+{% endblock %}
+</body>
+</html>

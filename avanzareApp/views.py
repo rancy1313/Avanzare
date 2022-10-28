@@ -84,3 +84,49 @@ def delete_item():
         flash('error!', category="error")
     return jsonify({})
 
+@views.route('/edit_redirect/<int:id>', methods=['GET', 'POST'])
+def edit_redirect(id):
+    item = Menu.query.filter(Menu.id == id).first()
+    if request.method == 'POST':
+        print("first: ", item.name, item.price, item.description, item.menu_type, item.id)
+        name = request.form.get('name')
+        price = request.form.get('price')
+        description = request.form.get('description')
+        menu_type = request.form.get('menu_type')
+        print("form vars:", name, price, description, menu_type)
+        item.name = name
+        item.price = price
+        item.description = description
+        item.menu_type = menu_type
+        print(item.name, item.price, item.description, item.menu_type, item.id)
+        flash('Item has been edited!!!', category="success")
+        db.session.commit()
+        return redirect(url_for('views.add_menu_item'))
+    return render_template('edit_menu_item.html', item=item)
+
+
+'''''
+@views.route('/update_menu/<int:id>', methods=['GET','POST'])
+def update_menu_item(id):
+    item = Menu.query.filter(Menu.id == id).first()
+    print("first: ", item.name, item.price, item.description, item.menu_type, item.id)
+    name = request.form.get('name')
+    price = request.form.get('price')
+    description = request.form.get('description')
+    menu_type = request.form.get('menu_type')
+    print("form vars:", name, price, description, menu_type)
+    item.name = name
+    item.price = price
+    item.description = description
+    item.menu_type = menu_type
+    print(item.name, item.price, item.description, item.menu_type, item.id)
+
+    print(item.name, item.price, item.description, item.menu_type, item.id)
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+    return render_template("edit_menu.html", items=items, user=current_user)
+
+
+'''''
+
+

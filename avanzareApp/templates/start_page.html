@@ -3,7 +3,7 @@
 <h1 align="center">Hello, Welcome to Avanzare!!!</h1>
 
 <h1 align="center"> DINNER MENU </h1>
-        <ul class="list-group list-group-flush" id="items">
+        <ul class="list-group list-group-flush" >
             {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES"] %}
@@ -26,7 +26,7 @@
         </ul>
 
 <h1 align="center"> COCKTAILS </h1>
-        <ul class="list-group list-group-flush" id="items">
+        <ul class="list-group list-group-flush" >
           {% for item in items %}
                 {% if item.menu_type == "COCKTAILS" %}
                   <li class="list-group-item">
@@ -41,7 +41,7 @@
         </ul>
 
 <h1 align="center"> BEER </h1>
-        <ul class="list-group list-group-flush" id="items">
+        <ul class="list-group list-group-flush" >
             {% set BEER_sub_menus = ["BOTTLE", "DRAFT"] %}
             {% set print_once = 1 %}
             {% for menu in BEER_sub_menus %}

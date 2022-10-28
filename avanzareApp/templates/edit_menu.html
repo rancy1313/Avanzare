@@ -113,24 +113,6 @@
     <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
 
-
-    <h1 align="center">Menu</h1>
-        <ul class="list-group list-group-flush" id="items">
-          {% for item in user.items %}
-              <li class="list-group-item">
-                  {{ item.menu_type }}
-                  <br />
-                  {{ item.name }}
-                  {{ item.price }}
-                  <br />
-                  {{ item.description }}
-                <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </li>
-          {% endfor %}
-        </ul>
-
     <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" id="items">
             {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
@@ -147,7 +129,8 @@
                           {{ item.price }}
                           <br />
                           {{ item.description }}
-
+                            <br />
+                              <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
                           <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -159,7 +142,7 @@
         </ul>
 
 <h1 align="center"> COCKTAILS </h1>
-        <ul class="list-group list-group-flush" id="items">
+        <ul class="list-group list-group-flush">
           {% for item in items %}
                 {% if item.menu_type == "COCKTAILS" %}
                   <li class="list-group-item">
@@ -167,6 +150,8 @@
                       {{ item.price }}
                       <br />
                       {{ item.description }}
+                      <br />
+                      <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
                       <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -177,7 +162,7 @@
         </ul>
 
 <h1 align="center"> BEER </h1>
-        <ul class="list-group list-group-flush" id="items">
+        <ul class="list-group list-group-flush" >
             {% set BEER_sub_menus = ["BOTTLE", "DRAFT"] %}
             {% set print_once = 1 %}
             {% for menu in BEER_sub_menus %}
@@ -192,6 +177,8 @@
                           {{ item.price }}
                           <br />
                           {{ item.description }}
+                          <br />
+                          <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
                           <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -200,6 +187,7 @@
               {% endfor %}
             {% set print_once = 1 %}
             {% endfor %}
+            </ul>
 
 {% endblock %}
 
@@ -222,5 +210,6 @@
       type="text/javascript"
       src="{{ url_for('static', filename='index.js') }}"
     ></script>
+
 </body>
 </html>
