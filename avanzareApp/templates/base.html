@@ -15,6 +15,7 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="style.css">
     <title>{% block title%}Home{% endblock %}</title>
 
 </head>
@@ -28,7 +29,11 @@
         <div class="collapse navbar-collapse" id="navbar">
             <div class="navbar-nav">
                 {% if user.is_authenticated %}
+                    {% if user.email == "headChef@gmail.com" %}
+                        <a class="nav-item nav-link" id="edit_menu" href="/add-menu-item">Edit Menu</a>
+                    {% endif %}
                     <a class="nav-item nav-link" id="home" href="/">Home</a>
+                    <a class="nav-item nav-link" id="order" href="/order">Order</a>
                     <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                 {% else %}
                     <a class="nav-item nav-link" id="menu" href="/start_page">Menu</a>
