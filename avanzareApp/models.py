@@ -24,6 +24,27 @@ class Menu(db.Model):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+class Menu_order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    price = db.Column(db.String(150))
+    description = db.Column(db.String(10000))
+    menu_type = db.Column(db.String(150))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    comment = db.Column(db.String(10000))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # stores menu items??
+    # too solutions use the relationship list by using a new Menu db with no primary kery for name
+    # private list variable??
+    items = db.relationship('Menu_order')
+
+
 
 class User(db.Model, UserMixin):
     # most cases you'll use columns
@@ -38,4 +59,5 @@ class User(db.Model, UserMixin):
     # for some reason Note is capital here sql be funky
     notes = db.relationship('Note')
     items = db.relationship('Menu')
+    orders = db.relationship('Order')
 

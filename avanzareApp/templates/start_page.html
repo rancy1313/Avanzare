@@ -1,6 +1,9 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-%}
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% block content %}
+
 <h1 align="center">Hello, Welcome to Avanzare!!!</h1>
+
+
 
 <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" >
@@ -23,6 +26,36 @@
               {% endfor %}
             {% set print_once = 1 %}
             {% endfor %}
+        </ul>
+
+<h1 align="center"> DESSERTS </h1>
+        <ul class="list-group list-group-flush" >
+          {% for item in items %}
+                {% if item.menu_type == "DESSERT MENU" %}
+                  <li class="list-group-item">
+                      {{ item.name }}
+                      {{ item.price }}
+                      <br />
+                      {{ item.description }}
+                  </li>
+                {% endif %}
+
+          {% endfor %}
+        </ul>
+
+<h1 align="center"> After Dinner Drinks </h1>
+        <ul class="list-group list-group-flush" >
+          {% for item in items %}
+                {% if item.menu_type == "AFTER DINNER DRINKS" %}
+                  <li class="list-group-item">
+                      {{ item.name }}
+                      {{ item.price }}
+                      <br />
+                      {{ item.description }}
+                  </li>
+                {% endif %}
+
+          {% endfor %}
         </ul>
 
 <h1 align="center"> COCKTAILS </h1>

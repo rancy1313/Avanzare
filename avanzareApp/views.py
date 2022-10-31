@@ -1,16 +1,29 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Note, Menu, User
+from .models import Note, Menu, User, Order, Menu_order
 from . import db
 import json
 
 views = Blueprint('views', __name__)
 
+# add orders variable to User class
+# create a class ofr orders and link by id
+# make a list of items to add on orders
+# save each list as a separate order
+# JUST IDEA might need two new tables one for individual orders and
+# one that takes lists of orders to check order history
+# maybe orders can also add a comment to each dish
+# maybe in user sign up you can add alergies also have nav that can edit it
+# gonna have to change base.html or create base html for headCHef account
+# add html the pizza descriptio. Look for more menu data to be added
+# pictures of food??
+# {% if user.email == 'headChef@gmail.com" %}
+# something like <a class="nav-item nav-link" id="home" href="/add_menu">add_menu</a>
+
 #decorator
 @views.route('/add-menu-item', methods=['GET', 'POST'])
 @login_required
 def add_menu_item():
-
     if request.method == 'POST':
         name = request.form.get('name')
         price = request.form.get('price')
@@ -57,6 +70,50 @@ def home():
             flash('Note added.', category="success")
     return render_template("home.html", user=current_user)
 
+@views.route('/order', methods=['GET', 'POST'])
+@login_required
+def order():
+    # create order
+    # we need to pass new_item to access its order id
+    print("next Order??????????")
+    new_order = Order(user_id=current_user.id)
+    db.session.add(new_order)
+    db.session.commit()
+    print(new_order.id)
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+    return render_template("order.html", items=items, new_order=new_order, user=current_user)
+
+@views.route('/add-to-order/<int:item_id>/<int:order_id>', methods=['GET', 'POST'])
+def add_to_order(item_id, order_id):
+    # add to order
+    # chnage how you add an item i think
+    item = Menu.query.filter(Menu.id == item_id).first()
+    new_order = Order.query.filter(Order.id == order_id).first()
+    # create a copy of the itme to add in the order relationship list
+    # has to be a copy because menu items are uniqe in the list
+    item_copy = Menu_order()
+    item_copy.name = item.name
+    item_copy.price = item.price
+    item_copy.description = item.description
+    item_copy.menu_type = item.menu_type
+    item_copy.order_id = order_id
+    db.session.add(item_copy)
+    db.session.commit()
+
+    flash('Item added.', category="success")
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+    if request.method == "POST":
+        new_order.name = current_user.first_name
+        new_order.comment = "comment"
+        #db.session.add(new_order)
+        #db.session.commit()
+        print("yoooooo")
+        return redirect(url_for('views.home'))
+    return render_template('order.html', items=items, new_order=new_order, user=current_user)
+
+
 @views.route('/delete-note', methods=['POST'])
 def delete_note():
     note = json.loads(request.data)
@@ -102,31 +159,7 @@ def edit_redirect(id):
         flash('Item has been edited!!!', category="success")
         db.session.commit()
         return redirect(url_for('views.add_menu_item'))
-    return render_template('edit_menu_item.html', item=item)
+    return render_template('edit_menu_item.html', item=item, user=current_user)
 
-
-'''''
-@views.route('/update_menu/<int:id>', methods=['GET','POST'])
-def update_menu_item(id):
-    item = Menu.query.filter(Menu.id == id).first()
-    print("first: ", item.name, item.price, item.description, item.menu_type, item.id)
-    name = request.form.get('name')
-    price = request.form.get('price')
-    description = request.form.get('description')
-    menu_type = request.form.get('menu_type')
-    print("form vars:", name, price, description, menu_type)
-    item.name = name
-    item.price = price
-    item.description = description
-    item.menu_type = menu_type
-    print(item.name, item.price, item.description, item.menu_type, item.id)
-
-    print(item.name, item.price, item.description, item.menu_type, item.id)
-    user = User.query.filter(User.email == 'headChef@gmail.com').first()
-    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
-    return render_template("edit_menu.html", items=items, user=current_user)
-
-
-'''''
 
 

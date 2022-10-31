@@ -1,10 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% block content %}
 
-</body>
-</html>
+    <h1 align="center"> Hello {{ user.first_name }}, here is your order. </h1>
+
+{% for item in new_order.items %}
+    {{ item.name }}
+    {% set tmp = "$" + (item.price | string) %}
+    {{ tmp }}
+    <br />
+{% endfor %}
+
+<form method="POST">
+    <button type="submit" class="btn btn-primary">Complete Order</button>
+</form>
+    <h1 align="center"> DINNER MENU </h1>
+        <ul class="list-group list-group-flush" id="items">
+            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
+            {% set print_once = 1 %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES"] %}
+                {% if print_once == 1 %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for item in items %}
+                    {% if item.menu_type == menu %}
+                      <li class="list-group-item">
+                          {{ item.name }}
+                          {% set tmp = "$" + (item.price | string) %}
+                          {{ tmp }}
+                          <br />
+                          {{ item.description }}
+                            <br />
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+        </ul>
+
+<h1 align="center"> DESSERTS </h1>
+        <ul class="list-group list-group-flush">
+          {% for item in items %}
+                {% if item.menu_type == "DESSERT MENU" %}
+                  <li class="list-group-item">
+                      {{ item.name }}
+                      {% set tmp = "$" + (item.price | string) %}
+                      {{ tmp }}
+                      <br />
+                      {{ item.description }}
+                      <br />
+                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                  </li>
+                {% endif %}
+
+          {% endfor %}
+        </ul>
+
+<h1 align="center"> AFTER DINNER DRINKS </h1>
+        <ul class="list-group list-group-flush">
+          {% for item in items %}
+                {% if item.menu_type == "AFTER DINNER DRINKS" %}
+                  <li class="list-group-item">
+                      {{ item.name }}
+                      {% set tmp = "$" + (item.price | string) %}
+                      {{ tmp }}
+                      <br />
+                      {{ item.description }}
+                      <br />
+                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                  </li>
+                {% endif %}
+
+          {% endfor %}
+        </ul>
+
+<h1 align="center"> COCKTAILS </h1>
+        <ul class="list-group list-group-flush">
+          {% for item in items %}
+                {% if item.menu_type == "COCKTAILS" %}
+                  <li class="list-group-item">
+                      {{ item.name }}
+                      {% set tmp = "$" + (item.price | string) %}
+                      {{ tmp }}
+                      <br />
+                      {{ item.description }}
+                      <br />
+                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                  </li>
+                {% endif %}
+
+          {% endfor %}
+        </ul>
+
+<h1 align="center"> BEER </h1>
+        <ul class="list-group list-group-flush" >
+            {% set BEER_sub_menus = ["BOTTLE", "DRAFT"] %}
+            {% set print_once = 1 %}
+            {% for menu in BEER_sub_menus %}
+                {% if print_once == 1 %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for item in items %}
+                    {% if item.menu_type == menu %}
+                      <li class="list-group-item">
+                          {{ item.name }}
+                          {% set tmp = "$" + (item.price | string) %}
+                          {{ tmp }}
+                          <br />
+                          {{ item.description }}
+                          <br />
+                            <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+            </ul>
+
+{% endblock %}

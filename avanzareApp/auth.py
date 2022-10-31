@@ -17,6 +17,13 @@ auth = Blueprint('auth', __name__)
 @auth.route('/start_page', methods=['GET'])
 def start_page():
     user = User.query.filter(User.email=='headChef@gmail.com').first()
+    # if db is deleted then we have to manually create the first user
+    if not user:
+        new_user = User(email="headChef@gmail.com", first_name="Rance", password=generate_password_hash("pasta123", method="sha256"))
+        db.session.add(new_user)
+        db.session.commit()
+        items = Menu.query.filter_by(user_id=new_user.id).order_by(Menu.name).all()
+        return render_template("start_page.html", items=items, user=current_user)
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     return render_template("start_page.html", items=items, user=current_user)
 
@@ -35,7 +42,7 @@ def login():
         password = request.form.get('password')
         # .first() returns first result but should only be one
         user = User.query.filter_by(email=email).first()
-
+        # dont forget to check_password here for pasta123
         if email == "headChef@gmail.com" and password == "pasta123":
             login_user(user, remember=True)
             return redirect(url_for('views.add_menu_item'))
@@ -89,7 +96,7 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
             #login_user(user, remember=True)
-            flash('Account created!!!', category="success")
-            return redirect(url_for('views.home'))
+            flash('Account created!!! You can login now!!', category="success")
+            return redirect(url_for('auth.login'))
 
     return render_template("sign_up.html", user=current_user)
