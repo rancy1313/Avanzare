@@ -76,7 +76,7 @@ def order():
     # create order
     # we need to pass new_item to access its order id
     print("next Order??????????")
-    new_order = Order(user_id=current_user.id)
+    new_order = Order(user_id=current_user.id, total=0)
     db.session.add(new_order)
     db.session.commit()
     print(new_order.id)
@@ -98,6 +98,8 @@ def add_to_order(item_id, order_id):
     item_copy.description = item.description
     item_copy.menu_type = item.menu_type
     item_copy.order_id = order_id
+    # calculate order total
+    new_order.total = new_order.total + float(item_copy.price)
     db.session.add(item_copy)
     db.session.commit()
 
