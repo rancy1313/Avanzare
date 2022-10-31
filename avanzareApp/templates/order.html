@@ -7,10 +7,18 @@
     {{ item.name }}
     {% set tmp = "$" + (item.price | string) %}
     {{ tmp }}
+    <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
+        <span aria-hidden="true">&times;</span>
+    </button>
     <br />
 {% endfor %}
-{% set tmp = "$" + (new_order.total | string) + "0"%}
-<div>Total: {{ tmp }}</div>
+<!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
+{% if "${:,.2f}".format(new_order.total) == "$-0.00" %}
+   <div>Total: $0.00</div>
+{% else %}
+    <div>Total: {{ "${:,.2f}".format(new_order.total) }}</div>
+{% endif %}
+
 
 <form method="POST">
     <button type="submit" class="btn btn-primary">Complete Order</button>

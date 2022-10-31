@@ -143,6 +143,34 @@ def delete_item():
         flash('error!', category="error")
     return jsonify({})
 
+
+@views.route('/delete-order-item', methods=['POST', 'GET'])
+def delete_order_item():
+    item = json.loads(request.data)
+    itemId = item['itemId']
+    item = Menu_order.query.get(itemId)
+    new_order = db.session.query(Order).order_by(Order.id.desc()).first()
+    new_order.total = new_order.total - float(item.price)
+    print("we are in the function")
+    if item:
+        db.session.delete(item)
+        db.session.commit()
+        print("should be deleted")
+        flash('ITEM DELETED!', category="success")
+    else:
+        flash('error!', category="error")
+        print("nvm didnt work")
+    return jsonify({})
+
+
+@views.route('/refresh-order', methods=['GET', 'POST'])
+def refresh_order():
+    new_order = db.session.query(Order).order_by(Order.id.desc()).first()
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+    return render_template("order.html", items=items, new_order=new_order, user=current_user)
+
+
 @views.route('/edit_redirect/<int:id>', methods=['GET', 'POST'])
 def edit_redirect(id):
     item = Menu.query.filter(Menu.id == id).first()
