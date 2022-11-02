@@ -40,6 +40,7 @@ class Order(db.Model):
     total = db.Column(db.Float)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    is_active = db.Column(db.String(10))
     # stores menu items??
     # too solutions use the relationship list by using a new Menu db with no primary kery for name
     # private list variable??

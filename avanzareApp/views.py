@@ -30,7 +30,6 @@ def add_menu_item():
         description = request.form.get('description')
         menu_type = request.form.get('menu_type')
 
-
         menu_item = Menu.query.filter_by(name=name).first()
 
         if menu_item:
@@ -70,6 +69,12 @@ def home():
             flash('Note added.', category="success")
     return render_template("home.html", user=current_user)
 
+@views.route('/user_home', methods=['GET', 'POST'])
+@login_required
+def user_home():
+    active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
+    return render_template("user_home.html", active_orders=active_orders, user=current_user)
+
 @views.route('/order', methods=['GET', 'POST'])
 @login_required
 def order():
@@ -87,32 +92,38 @@ def order():
 @views.route('/add-to-order/<int:item_id>/<int:order_id>', methods=['GET', 'POST'])
 def add_to_order(item_id, order_id):
     # add to order
-    # chnage how you add an item i think
+    # change how you add an item i think
     item = Menu.query.filter(Menu.id == item_id).first()
+
     new_order = Order.query.filter(Order.id == order_id).first()
     # create a copy of the itme to add in the order relationship list
     # has to be a copy because menu items are uniqe in the list
-    item_copy = Menu_order()
-    item_copy.name = item.name
-    item_copy.price = item.price
-    item_copy.description = item.description
-    item_copy.menu_type = item.menu_type
-    item_copy.order_id = order_id
-    # calculate order total
-    new_order.total = new_order.total + float(item_copy.price)
-    db.session.add(item_copy)
-    db.session.commit()
-
-    flash('Item added.', category="success")
+    if request.method != "POST":
+        item_copy = Menu_order()
+        item_copy.name = item.name
+        item_copy.price = item.price
+        item_copy.description = item.description
+        item_copy.menu_type = item.menu_type
+        item_copy.order_id = order_id
+        # calculate order total
+        new_order.total = new_order.total + float(item_copy.price)
+        db.session.add(item_copy)
+        db.session.commit()
+        print("will it add twice??")
+        flash('Item added.', category="success")
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+
     if request.method == "POST":
+        print("final part????")
         new_order.name = current_user.first_name
-        new_order.comment = "comment"
+        new_order.comment = request.form.get('comment')
+        new_order.is_active = "Active"
+        flash('Order Submitted!!!', category="success")
         #db.session.add(new_order)
-        #db.session.commit()
+        db.session.commit()
         print("yoooooo")
-        return redirect(url_for('views.home'))
+        return redirect(url_for('views.user_home'))
     return render_template('order.html', items=items, new_order=new_order, user=current_user)
 
 
@@ -165,6 +176,19 @@ def delete_order_item():
 
 @views.route('/refresh-order', methods=['GET', 'POST'])
 def refresh_order():
+    #return redirect(url_for('views.add_to_order'))
+    if request.method == "POST":
+        print("final part????")
+        new_order = db.session.query(Order).order_by(Order.id.desc()).first()
+        new_order.name = current_user.first_name
+        new_order.comment = request.form.get('comment')
+        new_order.is_active = "Active"
+        flash('Order Submitted!!!', category="success")
+        #db.session.add(new_order)
+        db.session.commit()
+        print("yoooooo")
+        active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
+        return render_template("user_home.html", active_orders=active_orders, user=current_user)
     new_order = db.session.query(Order).order_by(Order.id.desc()).first()
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
@@ -191,5 +215,68 @@ def edit_redirect(id):
         return redirect(url_for('views.add_menu_item'))
     return render_template('edit_menu_item.html', item=item, user=current_user)
 
+@views.route('/view-orders', methods=['POST', 'GET'])
+def view_orders():
+    active_orders = Order.query.filter(Order.is_active == 'Active').all()
+    inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
+    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
 
+@views.route('/deactivate-order/<int:id>', methods=['POST', 'GET'])
+def deactivate_orders(id):
+    order = Order.query.filter(Order.id == id).first()
+    order.is_active = "Inactive"
+    active_orders = Order.query.filter(Order.is_active == 'Active').all()
+    inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
+    db.session.commit()
+    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
+
+@views.route('/clear-inactive-orders', methods=['POST', 'GET'])
+def clear_inactive_orders():
+    inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
+    for item in inactive_orders:
+        item.is_active = "clear"
+    db.session.commit()
+    active_orders = Order.query.filter(Order.is_active == 'Active').all()
+    inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
+    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
+
+@views.route('/corder-again/<int:id>', methods=['GET', 'POST'])
+def order_again(id):
+    if request.method != 'POST':
+        # fetch old order to copy info over
+        old_order = Order.query.filter(Order.id == id).first()
+        new_order = Order(user_id=current_user.id, total=0)
+        db.session.add(new_order)
+
+        # copy order items and details
+        for item in old_order.items:
+            item_copy = Menu_order()
+            item_copy.name = item.name
+            item_copy.price = item.price
+            item_copy.description = item.description
+            item_copy.menu_type = item.menu_type
+            item_copy.order_id = new_order.id
+            # calculate order total
+            new_order.total = new_order.total + float(item_copy.price)
+            db.session.add(item_copy)
+            db.session.commit()
+            print("in loop")
+    if request.method == "POST":
+        print("final part????")
+        new_order = Order.query.filter(Order.id == id).first()
+        new_order.name = current_user.first_name
+        new_order.comment = request.form.get('comment')
+        new_order.is_active = "Active"
+        flash('Order Submitted!!!', category="success")
+        #db.session.add(new_order)
+        db.session.commit()
+        print("yoooooo")
+        active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
+        return render_template("user_home.html", active_orders=active_orders, user=current_user)
+
+    print('ummm dang')
+    #db.session.commit()
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+    return render_template("order.html", items=items, new_order=new_order, user=current_user)
 

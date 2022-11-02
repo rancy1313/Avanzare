@@ -52,7 +52,7 @@ def login():
                 flash('Logged in successfully!', category="success")
                 # makes it so user doesn't have to login everytime
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return redirect(url_for('views.user_home'))
             else:
                 flash('Incorrect password, try again.', category="error")
         else:

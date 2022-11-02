@@ -1,0 +1,59 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+
+{% block content %}
+{% set count = namespace(value=0) %}
+{% for order in active_orders %}
+    {% set count.value = count.value + 1 %}
+{% endfor %}
+<h1 align="center">Active Orders: {{ count.value }}</h1>
+<div>----------------------------------------------</div>
+{% for order in active_orders %}
+    {{ order.name }}
+    <br />
+    {{ order.date }}
+    <br />
+    {% for item in order.items %}
+        {{ item.name }}
+        {% set tmp = "$" + (item.price | string) %}
+        {{ tmp }}
+        <br />
+    {% endfor %}
+    {% if "${:,.2f}".format(order.total) == "$-0.00" %}
+        <div>Total: $0.00</div>
+    {% else %}
+        <div>Total: {{ "${:,.2f}".format(order.total) }}</div>
+    {% endif %}
+    {{ order.comment }}
+    <a class="nav-item nav-link" href="{{ url_for('views.deactivate_orders', id=order.id) }}">Set Order to Inactive</a>
+    <div>----------------------------------------------</div>
+{% endfor %}
+
+{% set count = namespace(value=0) %}
+{% for order in inactive_orders %}
+    {% set count.value = count.value + 1 %}
+{% endfor %}
+<h1 align="center">Inactive Orders: {{ count.value }}</h1>
+<a class="nav-item nav-link" href="{{ url_for('views.clear_inactive_orders') }}">Clear Inactive Orders</a>
+<div>----------------------------------------------</div>
+{% for order in inactive_orders %}
+    {{ order.name }}
+    <br />
+    {{ order.date }}
+    <br />
+    {% for item in order.items %}
+        {{ item.name }}
+        {% set tmp = "$" + (item.price | string) %}
+        {{ tmp }}
+        <br />
+    {% endfor %}
+    {% if "${:,.2f}".format(order.total) == "$-0.00" %}
+        <div>Total: $0.00</div>
+    {% else %}
+        <div>Total: {{ "${:,.2f}".format(order.total) }}</div>
+    {% endif %}
+    {{ order.comment }}
+    <div>----------------------------------------------</div>
+{% endfor %}
+
+
+{% endblock %}
