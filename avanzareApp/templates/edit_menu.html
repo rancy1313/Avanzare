@@ -76,12 +76,26 @@
 
     <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" id="items">
-            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
-            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES"] %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
                 {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
-                    {% set print_once = 0 %}
+                    {% if menu == "DESSERT MENU" %}
+                        <h1 align="center"> DESSERTS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "AFTER DINNER DRINKS" %}
+                        <h1 align="center"> AFTER DINNER DRINKS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "COCKTAILS" %}
+                        <h1 align="center"> COCKTAILS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "BOTTLE" %}
+                        <h1 align="center"> BEER </h1>
+                        <div align="center">{{ menu }}</div>
+                        {% set print_once = 0 %}
+                    {% else %}
+                        <div align="center">{{ menu }}</div>
+                        {% set print_once = 0 %}
+                    {% endif %}
                 {% endif %}
               {% for item in items %}
                     {% if item.menu_type == menu %}
@@ -112,138 +126,6 @@
             {% set print_once = 1 %}
             {% endfor %}
         </ul>
-
-<h1 align="center"> DESSERTS </h1>
-        <ul class="list-group list-group-flush">
-          {% for item in items %}
-                {% if item.menu_type == "DESSERT MENU" %}
-                  <li class="list-group-item">
-                      {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                      {% endif %}
-
-                      {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                      {% endif %}
-
-                      <!--item.price is a float so needs to be converted to string to display $ format-->
-                      {% set tmp = "$" + (item.price | string) %}
-                      {{ tmp }}
-                      <br />
-                      {{ item.description }}
-                      <br />
-                      <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                      <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                  </li>
-                {% endif %}
-
-          {% endfor %}
-        </ul>
-
-<h1 align="center"> After Dinner Drinks </h1>
-        <ul class="list-group list-group-flush">
-          {% for item in items %}
-                {% if item.menu_type == "AFTER DINNER DRINKS" %}
-                  <li class="list-group-item">
-                      {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                      {% endif %}
-
-                      {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                      {% endif %}
-
-                      <!--item.price is a float so needs to be converted to string to display $ format-->
-                      {% set tmp = "$" + (item.price | string) %}
-                      {{ tmp }}
-                      <br />
-                      {{ item.description }}
-                      <br />
-                      <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                      <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                  </li>
-                {% endif %}
-
-          {% endfor %}
-        </ul>
-
-<h1 align="center"> COCKTAILS </h1>
-        <ul class="list-group list-group-flush">
-          {% for item in items %}
-                {% if item.menu_type == "COCKTAILS" %}
-                  <li class="list-group-item">
-                      {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                      {% endif %}
-
-                      {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                      {% endif %}
-
-                      <!--item.price is a float so needs to be converted to string to display $ format-->
-                      {% set tmp = "$" + (item.price | string) %}
-                      {{ tmp }}
-                      <br />
-                      {{ item.description }}
-                      <br />
-                      <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                      <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                  </li>
-                {% endif %}
-
-          {% endfor %}
-        </ul>
-
-<h1 align="center"> BEER </h1>
-        <ul class="list-group list-group-flush" >
-            {% set BEER_sub_menus = ["BOTTLE", "DRAFT"] %}
-            {% set print_once = 1 %}
-            {% for menu in BEER_sub_menus %}
-                {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
-                    {% set print_once = 0 %}
-                {% endif %}
-              {% for item in items %}
-                    {% if item.menu_type == menu %}
-                      <li class="list-group-item">
-                          {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                                {{ "(GF)" }}
-                          {% endif %}
-
-                          {% if item.vegan == "VEGAN" %}
-                                {{ "(V)" }}
-                          {% endif %}
-
-                          <!--item.price is a float so needs to be converted to string to display $ format-->
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                          <br />
-                          <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                          <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                      </li>
-                    {% endif %}
-              {% endfor %}
-            {% set print_once = 1 %}
-            {% endfor %}
-            </ul>
 
 {% endblock %}
 
