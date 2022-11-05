@@ -16,6 +16,17 @@
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
                           {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                          {% endif %}
+
+                          {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                          {% endif %}
+
+                          <br />
+
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
                           <br />
@@ -33,6 +44,15 @@
                 {% if item.menu_type == "DESSERT MENU" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                      {% endif %}
+
+                      {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                      {% endif %}
+
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
                       <br />
@@ -49,6 +69,15 @@
                 {% if item.menu_type == "AFTER DINNER DRINKS" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                      {% endif %}
+
+                      {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                      {% endif %}
+
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
                       <br />
@@ -65,6 +94,15 @@
                 {% if item.menu_type == "COCKTAILS" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                      {% endif %}
+
+                      {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                      {% endif %}
+
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
                       <br />
@@ -88,6 +126,15 @@
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
                           {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                          {% endif %}
+
+                          {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                          {% endif %}
+
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
                           <br />
@@ -97,6 +144,92 @@
               {% endfor %}
             {% set print_once = 1 %}
             {% endfor %}
+        </ul>
+
+<div class="dropdown" align="center">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    GLUTEN FREE
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <ul class="list-group list-group-flush" >
+            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
+            {% set print_once = 1 %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
+                {% if print_once == 1 %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for item in items %}
+                    {% if item.menu_type == menu and item.gluten_free == "GLUTEN FREE" %}
+                      <li class="list-group-item">
+                          {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                          {% endif %}
+
+                          {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                          {% endif %}
+
+                          <br />
+
+                          {% set tmp = "$" + (item.price | string) %}
+                          {{ tmp }}
+                          <br />
+                          {{ item.description }}
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+        </ul>
+
+  </div>
+</div>
+
+<div class="dropdown" align="center">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    VEGAN
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <ul class="list-group list-group-flush" >
+            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
+            {% set print_once = 1 %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
+                {% if print_once == 1 %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for item in items %}
+                    {% if item.menu_type == menu and item.vegan == "VEGAN" %}
+                      <li class="list-group-item">
+                          {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                          {% endif %}
+
+                          {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                          {% endif %}
+
+                          <br />
+
+                          {% set tmp = "$" + (item.price | string) %}
+                          {{ tmp }}
+                          <br />
+                          {{ item.description }}
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+        </ul>
+
+  </div>
+</div>
+
 
 {% endblock %}
 

@@ -36,6 +36,18 @@
         />
     </div>
 
+    <div>Gluten Free Availability</div>
+    <select class="selectpicker" type="gluten_free" id="gluten_free" name="gluten_free">
+        <option>NO</option>
+        <option>GLUTEN FREE</option>
+    </select>
+
+    <div>Vegan Availability</div>
+    <select class="selectpicker" type="vegan" id="vegan" name="vegan">
+        <option>NO</option>
+        <option>VEGAN</option>
+    </select>
+
     <div>Menu Type</div>
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
       <optgroup label="DINNER MENU" >
@@ -75,6 +87,15 @@
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
                           {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                          {% endif %}
+
+                          {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                          {% endif %}
+
                           <!--item.price is a float so needs to be converted to string to display $ format-->
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
@@ -98,6 +119,15 @@
                 {% if item.menu_type == "DESSERT MENU" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                      {% endif %}
+
+                      {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                      {% endif %}
+
                       <!--item.price is a float so needs to be converted to string to display $ format-->
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
@@ -120,6 +150,15 @@
                 {% if item.menu_type == "AFTER DINNER DRINKS" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                      {% endif %}
+
+                      {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                      {% endif %}
+
                       <!--item.price is a float so needs to be converted to string to display $ format-->
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
@@ -142,6 +181,15 @@
                 {% if item.menu_type == "COCKTAILS" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ "(GF)" }}
+                      {% endif %}
+
+                      {% if item.vegan == "VEGAN" %}
+                            {{ "(V)" }}
+                      {% endif %}
+
                       <!--item.price is a float so needs to be converted to string to display $ format-->
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
@@ -171,6 +219,15 @@
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
                           {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                                {{ "(GF)" }}
+                          {% endif %}
+
+                          {% if item.vegan == "VEGAN" %}
+                                {{ "(V)" }}
+                          {% endif %}
+
                           <!--item.price is a float so needs to be converted to string to display $ format-->
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}

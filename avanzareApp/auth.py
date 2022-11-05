@@ -74,7 +74,20 @@ def logout():
 def sign_up():
     if request.method == 'POST':
         email = request.form.get('email')
+        # all special chars minus @ and . because it is needed to make an email
+        special_chars = '`~!#$%^&*()-_=+|[]{};:<>,\"\\/'
+        for char in special_chars:
+            if char in email:
+                flash('No special chars allowed in email (except \' ).', category="error")
+                return redirect(url_for('auth.sign_up'))
         first_name = request.form.get('firstName')
+        # this time checks for @ char too
+        special_chars = '@`~!#$%^&*()-_=+|[]{};:<>,.\"\\/'
+        for char in special_chars:
+            if char in first_name:
+                flash('No special chars allowed in First name (except \' ).', category="error")
+                return redirect(url_for('auth.sign_up'))
+        # umm might need more password restrictions
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
 

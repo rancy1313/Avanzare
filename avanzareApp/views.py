@@ -26,8 +26,30 @@ views = Blueprint('views', __name__)
 def add_menu_item():
     if request.method == 'POST':
         name = request.form.get('name')
+        # make sure no uses any weird characters or tries to do anything funny
+        special_chars = '`~!@#$%^&*()-_=+|[]{};:<>\"\\/'
+        for char in special_chars:
+            if char in name:
+                flash('No special chars allowed in item names (except \' ).', category="error")
+                return redirect(url_for('views.add_menu_item'))
         price = request.form.get('price')
+        try:
+            # if price can't be converted to float then that means there are chars being used that are not digits
+            float(price)
+        except:
+            flash('Only enter digits for price.', category="error")
+            return redirect(url_for('views.add_menu_item'))
+        if price == '0':
+            flash('No free items.', category="error")
+            return redirect(url_for('views.add_menu_item'))
+        price = "{:,.2f}".format(float(price))
         description = request.form.get('description')
+        for char in special_chars:
+            if char in description:
+                flash('No special chars allowed in description (except \' ).', category="error")
+                return redirect(url_for('views.add_menu_item'))
+        gluten_free = request.form.get('gluten_free')
+        vegan = request.form.get('vegan')
         menu_type = request.form.get('menu_type')
 
         menu_item = Menu.query.filter_by(name=name).first()
@@ -39,7 +61,7 @@ def add_menu_item():
             #flash('Description must be less than 10,000 characters.', category="error")
         else:
             # add the user
-            new_menu_item = Menu(name=name, price=price, description=description, menu_type=menu_type, user_id=current_user.id)
+            new_menu_item = Menu(name=name, price=price, description=description, menu_type=menu_type, gluten_free=gluten_free, vegan=vegan, user_id=current_user.id)
             db.session.add(new_menu_item)
             db.session.commit()
             #login_user(user, remember=True)
@@ -72,59 +94,81 @@ def home():
 @views.route('/user_home', methods=['GET', 'POST'])
 @login_required
 def user_home():
+    # sometimes when the page is refreshed while on the order page
+    # or everytime the order page is clicked it will create a new order
+    # so I will delete those orders here
+    error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == None).delete()
+    error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.total == 0).delete()
+    db.session.commit()
     active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
+    db.session.commit()
     return render_template("user_home.html", active_orders=active_orders, user=current_user)
 
 @views.route('/order', methods=['GET', 'POST'])
 @login_required
 def order():
+    #test
+    error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.total == 0).all()
+    for order in error_orders:
+        db.session.delete(order)
+    db.session.commit()
     # create order
     # we need to pass new_item to access its order id
-    print("next Order??????????")
     new_order = Order(user_id=current_user.id, total=0)
     db.session.add(new_order)
     db.session.commit()
-    print(new_order.id)
+    if request.method == "POST" and 1 == 1:
+        print("in order func trying to post")
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     return render_template("order.html", items=items, new_order=new_order, user=current_user)
 
-@views.route('/add-to-order/<int:item_id>/<int:order_id>', methods=['GET', 'POST'])
-def add_to_order(item_id, order_id):
-    # add to order
-    # change how you add an item i think
-    item = Menu.query.filter(Menu.id == item_id).first()
-
-    new_order = Order.query.filter(Order.id == order_id).first()
-    # create a copy of the itme to add in the order relationship list
-    # has to be a copy because menu items are uniqe in the list
+@views.route('/add-to-order/<int:item_id>/<int:order_id>/<int:gf>/<int:v>/<int:gfv>', methods=['GET', 'POST'])
+def add_to_order(item_id, order_id, gf, v, gfv):
     if request.method != "POST":
+        # add to order
+        # change how you add an item i think
+        item = Menu.query.filter(Menu.id == item_id).first()
+        new_order = Order.query.filter(Order.id == order_id).first()
+        # create a copy of the itme to add in the order relationship list
+        # has to be a copy because menu items are uniqe in the list
         item_copy = Menu_order()
-        item_copy.name = item.name
+        print(type(gf))
+        if gf == 1:
+            print(gf)
+            item_copy.name = "Gluten Free " + item.name
+        elif v == 1:
+            item_copy.name = "Vegan " + item.name
+        elif gfv == 1:
+            item_copy.name = "Gluten Free and Vegan " + item.name
+        else:
+            item_copy.name = item.name
+        print(item_copy.name)
         item_copy.price = item.price
         item_copy.description = item.description
         item_copy.menu_type = item.menu_type
+        item_copy.gluten_free = item.gluten_free
+        item_copy.vegan = item.vegan
         item_copy.order_id = order_id
         # calculate order total
         new_order.total = new_order.total + float(item_copy.price)
         db.session.add(item_copy)
         db.session.commit()
-        print("will it add twice??")
         flash('Item added.', category="success")
-    user = User.query.filter(User.email == 'headChef@gmail.com').first()
-    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+        user = User.query.filter(User.email == 'headChef@gmail.com').first()
+        items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+        return render_template('order.html', items=items, new_order=new_order, user=current_user)
 
     if request.method == "POST":
-        print("final part????")
+        new_order = db.session.query(Order).order_by(Order.id.desc()).first()
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
         new_order.is_active = "Active"
         flash('Order Submitted!!!', category="success")
         #db.session.add(new_order)
         db.session.commit()
-        print("yoooooo")
         return redirect(url_for('views.user_home'))
-    return render_template('order.html', items=items, new_order=new_order, user=current_user)
+
 
 
 @views.route('/delete-note', methods=['POST'])
@@ -162,23 +206,20 @@ def delete_order_item():
     item = Menu_order.query.get(itemId)
     new_order = db.session.query(Order).order_by(Order.id.desc()).first()
     new_order.total = new_order.total - float(item.price)
-    print("we are in the function")
     if item:
         db.session.delete(item)
         db.session.commit()
-        print("should be deleted")
         flash('ITEM DELETED!', category="success")
     else:
         flash('error!', category="error")
-        print("nvm didnt work")
     return jsonify({})
 
 
 @views.route('/refresh-order', methods=['GET', 'POST'])
 def refresh_order():
+    print("jdnjvnfdvnjdf")
     #return redirect(url_for('views.add_to_order'))
     if request.method == "POST":
-        print("final part????")
         new_order = db.session.query(Order).order_by(Order.id.desc()).first()
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
@@ -186,7 +227,6 @@ def refresh_order():
         flash('Order Submitted!!!', category="success")
         #db.session.add(new_order)
         db.session.commit()
-        print("yoooooo")
         active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
         return render_template("user_home.html", active_orders=active_orders, user=current_user)
     new_order = db.session.query(Order).order_by(Order.id.desc()).first()
@@ -199,17 +239,29 @@ def refresh_order():
 def edit_redirect(id):
     item = Menu.query.filter(Menu.id == id).first()
     if request.method == 'POST':
-        print("first: ", item.name, item.price, item.description, item.menu_type, item.id)
         name = request.form.get('name')
+        special_chars = '`~!@#$%^&*()-_=+|[]{};:<>,.\"\\/'
+        for char in special_chars:
+            if char in name:
+                flash('No special chars allowed in item names (except \' ).', category="error")
+                return redirect(url_for('views.edit_redirect', id=id))
         price = request.form.get('price')
+        price = "{:,.2f}".format(float(price))
         description = request.form.get('description')
+        for char in special_chars:
+            if char in description:
+                flash('No special chars allowed in description (except \' ).', category="error")
+                return redirect(url_for('views.edit_redirect', id=id))
         menu_type = request.form.get('menu_type')
-        print("form vars:", name, price, description, menu_type)
+        gluten_free = request.form.get('gluten_free')
+        vegan = request.form.get('vegan')
+
         item.name = name
         item.price = price
         item.description = description
         item.menu_type = menu_type
-        print(item.name, item.price, item.description, item.menu_type, item.id)
+        item.gluten_free = gluten_free
+        item.vegan = vegan
         flash('Item has been edited!!!', category="success")
         db.session.commit()
         return redirect(url_for('views.add_menu_item'))
@@ -240,43 +292,104 @@ def clear_inactive_orders():
     inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
     return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
 
+
+'''
+
+@views.route('/corder-again/<int:id>', methods=['GET', 'POST'])
+def order_again(id):
+    old_order = Order.query.filter(Order.id == id).first()
+    new_order = Order(name=current_user.first_name, user_id=current_user.id, total=0)
+
+    db.session.add(new_order)
+    db.session.commit()
+    if request.method == "POST":
+        for item in old_order.items:
+            name = request.form.get('name' + str(item.id))
+            print(name)
+            price = request.form.get('price' + str(item.id))
+            print(price)
+            description = request.form.get('description' + str(item.id))
+            menu_type = request.form.get('menu_type' + str(item.id))
+            gluten_free = request.form.get('gluten_free' + str(item.id))
+            vegan = request.form.get('vegan' + str(item.id))
+            item_copy = Menu_order(name=name, price=price, description=description,
+                                  menu_type=menu_type, gluten_free=gluten_free, vegan=vegan,
+                                  order_id=new_order.id)
+            db.session.add(item_copy)
+            db.session.commit()
+            #item_copy = Menu_order(name=item.name, price=item.price, description = item.description, menu_type = item.menu_type, gluten_free = item.gluten_free, vegan = item.vegan, order_id = new_order.id)
+            print(item_copy.price)
+            new_order.total = new_order.total + float(item_copy.price)
+
+            db.session.commit()
+
+        new_order.comment = request.form.get('comment')
+
+
+
+        new_order.is_active = "Active"
+        flash('Order Submitted!!!', category="success")
+        db.session.commit()
+        return redirect(url_for('views.user_home'))
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+    return render_template("order_again.html", items=items, new_order=new_order, old_order=old_order, user=current_user)
+
+'''
 @views.route('/corder-again/<int:id>', methods=['GET', 'POST'])
 def order_again(id):
     if request.method != 'POST':
         # fetch old order to copy info over
+        error_orders = Order.query.filter(Order.is_active == None).all()
         old_order = Order.query.filter(Order.id == id).first()
         new_order = Order(user_id=current_user.id, total=0)
+        new_order.items.clear()
         db.session.add(new_order)
+        db.session.commit()
+        for x in new_order.items:
+            print("before loop: ",x.name)
+            new_order.items.remove(x)
+        print('!POST order again')
 
         # copy order items and details
         for item in old_order.items:
             item_copy = Menu_order()
-            item_copy.name = item.name
+            db.session.add(item_copy)
+            db.session.commit()
+            item_copy.name = item.name[:]
             item_copy.price = item.price
-            item_copy.description = item.description
-            item_copy.menu_type = item.menu_type
+            item_copy.description = item.description[:]
+            item_copy.menu_type = item.menu_type[:]
+            item_copy.gluten_free = item.gluten_free[:]
+            item_copy.vegan = item.vegan[:]
             item_copy.order_id = new_order.id
             # calculate order total
             new_order.total = new_order.total + float(item_copy.price)
-            db.session.add(item_copy)
             db.session.commit()
-            print("in loop")
+
+            print("loop")
+        # db.session.commit()
+        for x in new_order.items:
+            print(x.name)
+        user = User.query.filter(User.email == 'headChef@gmail.com').first()
+        items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+        return render_template("order.html", items=items, new_order=new_order, user=current_user)
+
     if request.method == "POST":
-        print("final part????")
-        new_order = Order.query.filter(Order.id == id).first()
+        print("POST")
+        new_order = db.session.query(Order).order_by(Order.id.desc()).first()
+        #new_order = Order.query.filter(Order.id == tmp_id).first()
+        for x in new_order.items:
+            print('post: ', x.name)
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
         new_order.is_active = "Active"
         flash('Order Submitted!!!', category="success")
         #db.session.add(new_order)
         db.session.commit()
-        print("yoooooo")
         active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
-        return render_template("user_home.html", active_orders=active_orders, user=current_user)
+        #return render_template("user_home.html", active_orders=active_orders, user=current_user)
+        return redirect(url_for('views.user_home'))
 
-    print('ummm dang')
-    #db.session.commit()
-    user = User.query.filter(User.email == 'headChef@gmail.com').first()
-    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
-    return render_template("order.html", items=items, new_order=new_order, user=current_user)
+
 

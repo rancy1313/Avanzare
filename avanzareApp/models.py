@@ -21,6 +21,8 @@ class Menu(db.Model):
     price = db.Column(db.String(150))
     description = db.Column(db.String(10000))
     menu_type = db.Column(db.String(150))
+    gluten_free = db.Column(db.String(150))
+    vegan = db.Column(db.String(150))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -30,6 +32,8 @@ class Menu_order(db.Model):
     price = db.Column(db.String(150))
     description = db.Column(db.String(10000))
     menu_type = db.Column(db.String(150))
+    gluten_free = db.Column(db.String(150))
+    vegan = db.Column(db.String(150))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
 

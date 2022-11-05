@@ -22,6 +22,18 @@
                 id="description"
                 name="description">{{item.description}}</textarea>
 
+    <div>Gluten Free Availability: {{ item.gluten_free }}</div>
+    <select class="selectpicker" type="gluten_free" id="gluten_free" name="gluten_free">
+        <option>NO</option>
+        <option>GLUTEN FREE</option>
+    </select>
+
+    <div>Vegan Availability: {{ item.vegan }}</div>
+    <select class="selectpicker" type="vegan" id="vegan" name="vegan">
+        <option>NO</option>
+        <option>VEGAN</option>
+    </select>
+
     <div>Menu Type: {{ item.menu_type }}</div>
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
       <optgroup label="DINNER MENU" >

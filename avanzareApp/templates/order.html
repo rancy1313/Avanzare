@@ -7,6 +7,7 @@
     {{ item.name }}
     {% set tmp = "$" + (item.price | string) %}
     {{ tmp }}
+
     <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -40,12 +41,24 @@
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
                           {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                          {% endif %}
+                          {% if item.vegan == "VEGAN" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                          {% endif %}
+
+                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                          {% endif %}
+
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
                           <br />
                           {{ item.description }}
                             <br />
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
 
                       </li>
                     {% endif %}
@@ -60,12 +73,24 @@
                 {% if item.menu_type == "DESSERT MENU" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                      {% endif %}
+                      {% if item.vegan == "VEGAN" %}
+                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                      {% endif %}
+
+                      {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                      {% endif %}
+
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
                       <br />
                       {{ item.description }}
                       <br />
-                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
                   </li>
                 {% endif %}
 
@@ -77,13 +102,26 @@
           {% for item in items %}
                 {% if item.menu_type == "AFTER DINNER DRINKS" %}
                   <li class="list-group-item">
+
                       {{ item.name }}
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                      {% endif %}
+                      {% if item.vegan == "VEGAN" %}
+                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                      {% endif %}
+
+                      {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                      {% endif %}
+
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
                       <br />
                       {{ item.description }}
                       <br />
-                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
+
                   </li>
                 {% endif %}
 
@@ -96,12 +134,24 @@
                 {% if item.menu_type == "COCKTAILS" %}
                   <li class="list-group-item">
                       {{ item.name }}
+
+                      {% if item.gluten_free == "GLUTEN FREE" %}
+                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                      {% endif %}
+                      {% if item.vegan == "VEGAN" %}
+                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                      {% endif %}
+
+                      {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                      {% endif %}
+
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
                       <br />
                       {{ item.description }}
                       <br />
-                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
                   </li>
                 {% endif %}
 
@@ -121,12 +171,24 @@
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
                           {{ item.name }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                          {% endif %}
+                          {% if item.vegan == "VEGAN" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                          {% endif %}
+
+                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                                <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                          {% endif %}
+
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
                           <br />
                           {{ item.description }}
                           <br />
-                            <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id) }}">Add to order</a>
+                            <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
                       </li>
                     {% endif %}
               {% endfor %}
