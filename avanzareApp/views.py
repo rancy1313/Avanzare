@@ -117,49 +117,59 @@ def order():
     new_order = Order(user_id=current_user.id, total=0)
     db.session.add(new_order)
     db.session.commit()
-    if request.method == "POST" and 1 == 1:
-        print("in order func trying to post")
+
+    if request.method == "POST":
+        flash('Empty Order', category="error")
+        return redirect(url_for('views.order'))
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     return render_template("order.html", items=items, new_order=new_order, user=current_user)
 
-@views.route('/add-to-order/<int:item_id>/<int:order_id>/<int:gf>/<int:v>/<int:gfv>', methods=['GET', 'POST'])
-def add_to_order(item_id, order_id, gf, v, gfv):
-    if request.method != "POST":
+@views.route('/add-to-order/<int:order_id>', methods=['GET', 'POST'])
+def add_to_order(order_id):
+    quantity = request.form.get('quantity')
+    dish_accommodation = request.form.get('dish_accommodation')
+    complete_order = request.form.get('complete_order')
+    # just in case someone enters spaces but no digits
+    # if quantity == none then can't strip usually when fresh order this occurs
+    if quantity != None:
+        if quantity.strip() == '':
+            quantity = 1
+    if quantity == None:
+        quantity = 1
+
+    # if you want to add a quantity
+    if request.method == "POST" and complete_order == 'FALSE':
         # add to order
         # change how you add an item i think
+        item_id = request.form.get('itemId')
         item = Menu.query.filter(Menu.id == item_id).first()
         new_order = Order.query.filter(Order.id == order_id).first()
         # create a copy of the itme to add in the order relationship list
-        # has to be a copy because menu items are uniqe in the list
-        item_copy = Menu_order()
-        print(type(gf))
-        if gf == 1:
-            print(gf)
-            item_copy.name = "Gluten Free " + item.name
-        elif v == 1:
-            item_copy.name = "Vegan " + item.name
-        elif gfv == 1:
-            item_copy.name = "Gluten Free and Vegan " + item.name
-        else:
-            item_copy.name = item.name
-        print(item_copy.name)
-        item_copy.price = item.price
-        item_copy.description = item.description
-        item_copy.menu_type = item.menu_type
-        item_copy.gluten_free = item.gluten_free
-        item_copy.vegan = item.vegan
-        item_copy.order_id = order_id
-        # calculate order total
-        new_order.total = new_order.total + float(item_copy.price)
-        db.session.add(item_copy)
-        db.session.commit()
+        # has to be a copy because menu items are unique in the list
+        for x in range(int(quantity)):
+            item_copy = Menu_order()
+            if dish_accommodation is not None and dish_accommodation != 'REGULAR':
+                item_copy.name = dish_accommodation + ' ' + item.name
+            else:
+                item_copy.name = item.name
+            item_copy.price = item.price
+            item_copy.description = item.description
+            item_copy.menu_type = item.menu_type
+            item_copy.gluten_free = item.gluten_free
+            item_copy.vegan = item.vegan
+            item_copy.order_id = order_id
+            # calculate order total
+            new_order.total = new_order.total + float(item_copy.price)
+            db.session.add(item_copy)
+            db.session.commit()
+
         flash('Item added.', category="success")
         user = User.query.filter(User.email == 'headChef@gmail.com').first()
         items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
         return render_template('order.html', items=items, new_order=new_order, user=current_user)
 
-    if request.method == "POST":
+    if request.method == "POST" and complete_order != 'FALSE':
         new_order = db.session.query(Order).order_by(Order.id.desc()).first()
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
@@ -217,10 +227,13 @@ def delete_order_item():
 
 @views.route('/refresh-order', methods=['GET', 'POST'])
 def refresh_order():
-    print("jdnjvnfdvnjdf")
-    #return redirect(url_for('views.add_to_order'))
+    # if post(user tries to submit order) after deleting an item then you can submit
     if request.method == "POST":
         new_order = db.session.query(Order).order_by(Order.id.desc()).first()
+        # make sure user doesn't submit an empty order
+        if new_order.total == 0:
+            flash('Empty order.', category="error")
+            return redirect(url_for('views.order'))
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
         new_order.is_active = "Active"

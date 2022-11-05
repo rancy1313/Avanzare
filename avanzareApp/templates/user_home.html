@@ -8,7 +8,7 @@
 {% endfor %}
 <h1 align="center">Active Orders for {{ user.first_name }}: {{ count.value }}</h1>
 <div>----------------------------------------------</div>
-{% for order in active_orders %}
+{% for order in active_orders|reverse %}
     {% for item in order.items %}
         {{ item.name }}
         {% set tmp = "$" + (item.price | string) %}
@@ -26,7 +26,8 @@
 <h1 align="center">News</h1>
 
 <h1>Past Orders</h1>
-{% for order in user.orders %}
+<!-- show past orders from newest to oldest-->
+{% for order in user.orders|reverse %}
     {{ order.date }}
     <br />
     {% for item in order.items %}

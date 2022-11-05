@@ -30,36 +30,90 @@
 
     <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" id="items">
-            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
+            {% set gf = "(GF)" %}
+            {% set v = "(V)" %}
+            {% set gfv = "(GF and V)" %}
+
             {% set print_once = 1 %}
-            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES"] %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
                 {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
-                    {% set print_once = 0 %}
+                    {% if menu == "DESSERT MENU" %}
+                        <h1 align="center"> DESSERTS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "AFTER DINNER DRINKS" %}
+                        <h1 align="center"> AFTER DINNER DRINKS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "COCKTAILS" %}
+                        <h1 align="center"> COCKTAILS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "BOTTLE" %}
+                        <h1 align="center"> BEER </h1>
+                        <div align="center">{{ menu }}</div>
+                        {% set print_once = 0 %}
+                    {% else %}
+                        <div align="center">{{ menu }}</div>
+                        {% set print_once = 0 %}
+                    {% endif %}
                 {% endif %}
               {% for item in items %}
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
+
                           {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
-                          {% endif %}
-                          {% if item.vegan == "VEGAN" %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
-                          {% endif %}
-
-                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
-                          {% endif %}
-
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
+
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                            {{ gf }}
+                          {% endif %}
+                          {% if item.vegan == "VEGAN" %}
+                              {{ v }}
+                          {% endif %}
+                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                              {{ gfv }}
+                          {% endif %}
                           <br />
                           {{ item.description }}
-                            <br />
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
+                          <br />
+                          <form action="/add-to-order/{{ new_order.id }}" method="POST">
+                              <div class="form-group">
+                                    <label for="quantity">Quantity: </label>
+                                    <input
+                                            type="quantity"
+                                            class="form-control"
+                                            id="quantity"
+                                            name="quantity"
+                                            placeholder="Max 10 at a time"
+                                    />
+                                  {% if (item.gluten_free == "GLUTEN FREE") or (item.vegan == "VEGAN") %}
+                                    <div>Gluten Free/Vegan</div>
+                                    <select class="selectpicker" type="dish_accommodation" id="dish_accommodation" name="dish_accommodation">
+                                      <optgroup label="CHOOSE ONE" >
+                                          <option>REGULAR</option>
+                                          {% if item.gluten_free == "GLUTEN FREE" %}
+                                          <option>GLUTEN FREE</option>
+                                          {% endif %}
+                                          {% if item.vegan == "VEGAN" %}
+                                          <option>VEGAN</option>
+                                          {% endif %}
+                                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                                          <option>GLUTEN FREE AND VEGAN</option>
+                                          {% endif %}
+                                      </optgroup>
+                                    </select>
+                                  {% endif %}
 
+                                  <textarea hidden
+                                            type="itemId"
+                                            id="itemId"
+                                            name="itemId">{{item.id}}</textarea>
+                                  <textarea hidden
+                                            type="complete_order"
+                                            id="complete_order"
+                                            name="complete_order">FALSE</textarea>
+                              </div>
+                              <button>Add to order</button>
+                          </form>
                       </li>
                     {% endif %}
               {% endfor %}
@@ -67,30 +121,35 @@
             {% endfor %}
         </ul>
 
+
+<!--
 <h1 align="center"> DESSERTS </h1>
         <ul class="list-group list-group-flush">
           {% for item in items %}
                 {% if item.menu_type == "DESSERT MENU" %}
                   <li class="list-group-item">
                       {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
-                      {% endif %}
-                      {% if item.vegan == "VEGAN" %}
-                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
-                      {% endif %}
-
-                      {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
-                      {% endif %}
-
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
+                      <div style="display: inline-block;">
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                          {% endif %}
+                      </div>
+                      <div style="display: inline-block;">
+                          {% if item.vegan == "VEGAN" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                          {% endif %}
+                      </div>
+                      <div style="display: inline-block;">
+                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link"  href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                          {% endif %}
+                      </div>
                       <br />
                       {{ item.description }}
                       <br />
-                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
+
                   </li>
                 {% endif %}
 
@@ -102,25 +161,27 @@
           {% for item in items %}
                 {% if item.menu_type == "AFTER DINNER DRINKS" %}
                   <li class="list-group-item">
-
                       {{ item.name }}
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
-                      {% endif %}
-                      {% if item.vegan == "VEGAN" %}
-                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
-                      {% endif %}
-
-                      {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
-                      {% endif %}
-
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
+                      <div style="display: inline-block;">
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                          {% endif %}
+                      </div>
+                      <div style="display: inline-block;">
+                          {% if item.vegan == "VEGAN" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                          {% endif %}
+                      </div>
+                      <div style="display: inline-block;">
+                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link"  href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                          {% endif %}
+                      </div>
                       <br />
                       {{ item.description }}
                       <br />
-                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
 
                   </li>
                 {% endif %}
@@ -134,24 +195,26 @@
                 {% if item.menu_type == "COCKTAILS" %}
                   <li class="list-group-item">
                       {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
-                      {% endif %}
-                      {% if item.vegan == "VEGAN" %}
-                      <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
-                      {% endif %}
-
-                      {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
-                      {% endif %}
-
                       {% set tmp = "$" + (item.price | string) %}
                       {{ tmp }}
+                      <div style="display: inline-block;">
+                          {% if item.gluten_free == "GLUTEN FREE" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                          {% endif %}
+                      </div>
+                      <div style="display: inline-block;">
+                          {% if item.vegan == "VEGAN" %}
+                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                          {% endif %}
+                      </div>
+                      <div style="display: inline-block;">
+                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                          <a class="nav-item nav-link"  href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                          {% endif %}
+                      </div>
                       <br />
                       {{ item.description }}
                       <br />
-                        <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
                   </li>
                 {% endif %}
 
@@ -167,33 +230,36 @@
                     <div align="center">{{ menu }}</div>
                     {% set print_once = 0 %}
                 {% endif %}
-              {% for item in items %}
+                {% for item in items %}
                     {% if item.menu_type == menu %}
-                      <li class="list-group-item">
-                          {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
-                          {% endif %}
-                          {% if item.vegan == "VEGAN" %}
-                          <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
-                          {% endif %}
-
-                          {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                                <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
-                          {% endif %}
-
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                          <br />
-                            <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=0) }}">Add to order</a>
+                        <li class="list-group-item">
+                            {{ item.name }}
+                            {% set tmp = "$" + (item.price | string) %}
+                            {{ tmp }}
+                            <div style="display: inline-block;">
+                                  {% if item.gluten_free == "GLUTEN FREE" %}
+                                  <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=1, v=0, gfv=0) }}">(GF)</a>
+                                  {% endif %}
+                            </div>
+                            <div style="display: inline-block;">
+                                  {% if item.vegan == "VEGAN" %}
+                                  <a class="nav-item nav-link" href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=1, gfv=0) }}">(V)</a>
+                                  {% endif %}
+                            </div>
+                            <div style="display: inline-block;">
+                                  {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                                  <a class="nav-item nav-link"  href="{{ url_for('views.add_to_order', item_id=item.id, order_id=new_order.id, gf=0, v=0, gfv=1) }}">(GF and V)</a>
+                                  {% endif %}
+                            </div>
+                            <br />
+                            {{ item.description }}
+                            <br />
                       </li>
                     {% endif %}
               {% endfor %}
             {% set print_once = 1 %}
             {% endfor %}
             </ul>
+            -->
 
 {% endblock %}
