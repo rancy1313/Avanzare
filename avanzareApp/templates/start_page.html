@@ -5,122 +5,26 @@
 
 <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" >
-            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
-            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES"] %}
+            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
                 {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
-                    {% set print_once = 0 %}
-                {% endif %}
-              {% for item in items %}
-                    {% if item.menu_type == menu %}
-                      <li class="list-group-item">
-                          {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                          {% endif %}
-
-                          {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                          {% endif %}
-
-                          <br />
-
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                      </li>
+                    {% if menu == "DESSERT MENU" %}
+                        <h1 align="center"> DESSERTS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "AFTER DINNER DRINKS" %}
+                        <h1 align="center"> AFTER DINNER DRINKS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "COCKTAILS" %}
+                        <h1 align="center"> COCKTAILS </h1>
+                        {% set print_once = 0 %}
+                    {% elif menu == "BOTTLE" %}
+                        <h1 align="center"> BEER </h1>
+                        <div align="center">{{ menu }}</div>
+                        {% set print_once = 0 %}
+                    {% else %}
+                        <div align="center">{{ menu }}</div>
+                        {% set print_once = 0 %}
                     {% endif %}
-              {% endfor %}
-            {% set print_once = 1 %}
-            {% endfor %}
-        </ul>
-
-<h1 align="center"> DESSERTS </h1>
-        <ul class="list-group list-group-flush" >
-          {% for item in items %}
-                {% if item.menu_type == "DESSERT MENU" %}
-                  <li class="list-group-item">
-                      {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                      {% endif %}
-
-                      {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                      {% endif %}
-
-                      {% set tmp = "$" + (item.price | string) %}
-                      {{ tmp }}
-                      <br />
-                      {{ item.description }}
-                  </li>
-                {% endif %}
-
-          {% endfor %}
-        </ul>
-
-<h1 align="center"> After Dinner Drinks </h1>
-        <ul class="list-group list-group-flush" >
-          {% for item in items %}
-                {% if item.menu_type == "AFTER DINNER DRINKS" %}
-                  <li class="list-group-item">
-                      {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                      {% endif %}
-
-                      {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                      {% endif %}
-
-                      {% set tmp = "$" + (item.price | string) %}
-                      {{ tmp }}
-                      <br />
-                      {{ item.description }}
-                  </li>
-                {% endif %}
-
-          {% endfor %}
-        </ul>
-
-<h1 align="center"> COCKTAILS </h1>
-        <ul class="list-group list-group-flush" >
-          {% for item in items %}
-                {% if item.menu_type == "COCKTAILS" %}
-                  <li class="list-group-item">
-                      {{ item.name }}
-
-                      {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
-                      {% endif %}
-
-                      {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
-                      {% endif %}
-
-                      {% set tmp = "$" + (item.price | string) %}
-                      {{ tmp }}
-                      <br />
-                      {{ item.description }}
-                  </li>
-                {% endif %}
-
-          {% endfor %}
-        </ul>
-
-<h1 align="center"> BEER </h1>
-        <ul class="list-group list-group-flush" >
-            {% set BEER_sub_menus = ["BOTTLE", "DRAFT"] %}
-            {% set print_once = 1 %}
-            {% for menu in BEER_sub_menus %}
-                {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
-                    {% set print_once = 0 %}
                 {% endif %}
               {% for item in items %}
                     {% if item.menu_type == menu %}
@@ -134,6 +38,8 @@
                           {% if item.vegan == "VEGAN" %}
                             {{ "(V)" }}
                           {% endif %}
+
+                          <br />
 
                           {% set tmp = "$" + (item.price | string) %}
                           {{ tmp }}
@@ -189,7 +95,7 @@
 </div>
 
 <div class="dropdown" align="center">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     VEGAN
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
