@@ -7,17 +7,59 @@
     {{ item.name }}
     {% set tmp = "$" + (item.price | string) %}
     {{ tmp }}
-
     <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
         <span aria-hidden="true">&times;</span>
     </button>
     <br />
 {% endfor %}
+
+{% set lst =  [] %}
+
+<table style="width:100%">
+          <tr>
+              <th>Item</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Remove Item</th>
+          </tr>
+<!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
+{% for item in new_order.items %}
+    {% set count = namespace(value=0) %}
+    {% set print_once = 1 %}
+    {% if item.name not in lst %}
+        {% for item_count in new_order.items %}
+            {% if item.name == item_count.name %}
+                {% set count.value = count.value + 1 %}
+            {% endif %}
+        {% endfor %}
+        {% if print_once == 1 %}
+            <tr>
+            <th>{{ item.name }}</th>
+            <th>{{ count.value }}</th>
+            {% set tmp = (item.price | int) %}
+            <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
+                <th>
+                <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </th>
+            </tr>
+
+        <br />
+        {% endif %}
+        {% set print_once = 1 %}
+        <div hidden>
+        {{ lst.append(item.name) }}
+        </div>
+    {% endif %}
+{% endfor %}
+</table>
+
 <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
 {% if "${:,.2f}".format(new_order.total) == "$-0.00" %}
-   <div>Total: $0.00</div>
+   <h3>Total: $0.00</h3>
 {% else %}
-    <div>Total: {{ "${:,.2f}".format(new_order.total) }}</div>
+    <h3>Total: {{ "${:,.2f}".format(new_order.total) }}</h3>
 {% endif %}
 
 
@@ -64,13 +106,13 @@
                           {{ tmp }}
 
                           {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ gf }}
+                            <i>{{ gf }}</i>
                           {% endif %}
                           {% if item.vegan == "VEGAN" %}
-                              {{ v }}
+                              <i>{{ v }}</i>
                           {% endif %}
                           {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                              {{ gfv }}
+                              <i>{{ gfv }}</i>
                           {% endif %}
                           <br />
                           {{ item.description }}

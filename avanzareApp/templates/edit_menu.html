@@ -103,11 +103,11 @@
                           {{ item.name }}
 
                           {% if item.gluten_free == "GLUTEN FREE" %}
-                            {{ "(GF)" }}
+                            <i>{{ "(GF)" }}</i>
                           {% endif %}
 
                           {% if item.vegan == "VEGAN" %}
-                            {{ "(V)" }}
+                            <i>{{ "(V)" }}</i>
                           {% endif %}
 
                           <!--item.price is a float so needs to be converted to string to display $ format-->
