@@ -39,6 +39,18 @@
             {% set tmp = (item.price | int) %}
             <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
                 <th>
+                    <form action="/add-to-order/{{ new_order.id }}" method="POST">
+                        <input style="width: 25%"
+                                type="delete_quantity"
+                               id="delete_quantity"
+                               name="delete_quantity"/>
+
+                        <textarea hidden
+                                            type="itemId2"
+                                            id="itemId2"
+                                            name="itemId2">{{item.id}}</textarea>
+                        <button>Del</button>
+                    </form>
                 <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -120,7 +132,7 @@
                           <form action="/add-to-order/{{ new_order.id }}" method="POST">
                               <div class="form-group">
                                     <label for="quantity">Quantity: </label>
-                                    <input
+                                    <input  style="width: 30%"
                                             type="quantity"
                                             class="form-control"
                                             id="quantity"

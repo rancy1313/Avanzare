@@ -138,8 +138,29 @@ def add_to_order(order_id):
     if quantity == None:
         quantity = 1
 
+    delete_quantity = request.form.get('delete_quantity')
+
+    if request.method == "POST" and delete_quantity is not None:
+        item_id2 = request.form.get('itemId2')
+        item = Menu_order.query.filter(Menu_order.id == item_id2).first()
+        new_order = Order.query.filter(Order.id == order_id).first()
+        delete_quantity = int(request.form.get('delete_quantity'))
+        # if you delete the item then you can't use it to delete other items
+        tmp_name = item.name[:]
+        for x in range(delete_quantity):
+            for item_compare_delete in new_order.items:
+                if tmp_name == item_compare_delete.name:
+                    db.session.delete(item_compare_delete)
+                    db.session.commit()
+                    break
+
+        flash('ITEMS DELETED!', category="success")
+        user = User.query.filter(User.email == 'headChef@gmail.com').first()
+        items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
+        return render_template('order.html', items=items, new_order=new_order, user=current_user)
+
     # if you want to add a quantity
-    if request.method == "POST" and complete_order == 'FALSE':
+    if request.method == "POST" and complete_order == 'FALSE' and delete_quantity is None:
         # add to order
         # change how you add an item i think
         item_id = request.form.get('itemId')
@@ -169,7 +190,7 @@ def add_to_order(order_id):
         items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
         return render_template('order.html', items=items, new_order=new_order, user=current_user)
 
-    if request.method == "POST" and complete_order != 'FALSE':
+    if request.method == "POST" and complete_order != 'FALSE' and delete_quantity is None:
         new_order = db.session.query(Order).order_by(Order.id.desc()).first()
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
@@ -223,6 +244,23 @@ def delete_order_item():
     else:
         flash('error!', category="error")
     return jsonify({})
+
+'''
+@views.route('/delete-by-quantity/<int:id>/<int:order_id>', methods=['POST', 'GET'])
+def delete_by_quantity(id, order_id):
+    print('hi')
+    item = Menu_order.query.filter(Menu_order.id == id).first()
+    new_order = Order.query.filter(Order.id == order_id).first()
+    delete_quantity = int(request.form.get('delete_quantity'))
+
+    for x in range(delete_quantity):
+        for item_compare_delete in new_order.items:
+            if item.name == item_compare_delete:
+                db.session.delete(item)
+                db.session.commit()
+                break
+    flash('ITEM DELETED!', category="success")
+    return redirect(url_for('views.refresh_order'))'''
 
 
 @views.route('/refresh-order', methods=['GET', 'POST'])
