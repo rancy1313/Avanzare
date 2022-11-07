@@ -9,41 +9,130 @@
 <h1 align="center">Active Orders for {{ user.first_name }}: {{ count.value }}</h1>
 <div>----------------------------------------------</div>
 {% for order in active_orders|reverse %}
-    {% for item in order.items %}
-        {{ item.name }}
-        {% set tmp = "$" + (item.price | string) %}
-        {{ tmp }}
-        <br />
-    {% endfor %}
-    {% if "${:,.2f}".format(order.total) == "$-0.00" %}
-        <div>Total: $0.00</div>
-    {% else %}
-        <div>Total: {{ "${:,.2f}".format(order.total) }}</div>
-    {% endif %}
-    <div>Order Comment: {{ order.comment }}</div>
-    <div>----------------------------------------------</div>
-{% endfor %}
-<h1 align="center">News</h1>
+    {% set lst =  [] %}
 
-<h1>Past Orders</h1>
-<!-- show past orders from newest to oldest-->
-{% for order in user.orders|reverse %}
-    {{ order.date }}
-    <br />
+    <table style="width:100%">
+            <tr>
+                <th>
+                    <h3>{{ order.date }}</h3>
+                </th>
+            </tr>
+              <tr>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+              </tr>
+    <!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
     {% for item in order.items %}
-    {{ item.name }}
-    {% set tmp = "$" + (item.price | string) %}
-    {{ tmp }}
-    <br />
+        {% set count = namespace(value=0) %}
+        {% set print_once = 1 %}
+        {% if item.name not in lst %}
+            {% for item_count in order.items %}
+                {% if item.name == item_count.name %}
+                    {% set count.value = count.value + 1 %}
+                {% endif %}
+            {% endfor %}
+            {% if print_once == 1 %}
+                <tr>
+                <th>{{ item.name }}</th>
+                <th>{{ count.value }}</th>
+                {% set tmp = (item.price | int) %}
+                <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
+                </tr>
+
+            <br />
+            {% endif %}
+            {% set print_once = 1 %}
+            <div hidden>
+            {{ lst.append(item.name) }}
+            </div>
+        {% endif %}
     {% endfor %}
+    </table>
+
+    <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
     {% if "${:,.2f}".format(order.total) == "$-0.00" %}
-        <div>Total: $0.00</div>
+       <h3>Total: $0.00</h3>
     {% else %}
-        <div>Total: {{ "${:,.2f}".format(order.total) }}</div>
+        <h3>Total: {{ "${:,.2f}".format(order.total) }}</h3>
     {% endif %}
-    <div>Order Comment: {{ order.comment }}</div>
+    <!-- only show order comment if there is one -->
+    {% if order.comment != "" and order.comment is not none %}
+        <div>Order Comment: {{ order.comment }}</div>
+    {% endif %}
     <a class="nav-item nav-link" href="{{ url_for('views.order_again', id=order.id) }}">Order Again</a>
     <div>----------------------------------------------</div>
-    <br />
+{% endfor %}
+
+<h1 align="center">News</h1>
+
+{% set count = namespace(value=0) %}
+{% for order in user.orders %}
+    {% if order.is_active != 'Active' %}
+        {% set count.value = count.value + 1 %}
+    {% endif %}
+{% endfor %}
+<h1>Past Orders: {{ count.value }}</h1>
+<!-- show past orders from newest to oldest-->
+{% for order in user.orders|reverse %}
+{% if order.is_active != 'Active' %}
+    {% set lst =  [] %}
+
+    <table style="width:100%">
+            <tr>
+                <th>
+                    <h3>{{ order.date }}</h3>
+                </th>
+                {% if order.is_active == "Active" %}
+                    <th>
+                        <div>Status: {{ order.is_active }}</div>
+                    </th>
+                {% endif%}
+            </tr>
+              <tr>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+              </tr>
+    <!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
+    {% for item in order.items %}
+        {% set count = namespace(value=0) %}
+        {% set print_once = 1 %}
+        {% if item.name not in lst %}
+            {% for item_count in order.items %}
+                {% if item.name == item_count.name %}
+                    {% set count.value = count.value + 1 %}
+                {% endif %}
+            {% endfor %}
+            {% if print_once == 1 %}
+                <tr>
+                <th>{{ item.name }}</th>
+                <th>{{ count.value }}</th>
+                {% set tmp = (item.price | int) %}
+                <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
+                </tr>
+
+            <br />
+            {% endif %}
+            {% set print_once = 1 %}
+            <div hidden>
+            {{ lst.append(item.name) }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    </table>
+
+    <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
+    {% if "${:,.2f}".format(order.total) == "$-0.00" %}
+       <h3>Total: $0.00</h3>
+    {% else %}
+        <h3>Total: {{ "${:,.2f}".format(order.total) }}</h3>
+    {% endif %}
+    {% if order.comment != "" and order.comment is not none %}
+        <div>Order Comment: {{ order.comment }}</div>
+    {% endif %}
+    <a class="nav-item nav-link" href="{{ url_for('views.order_again', id=order.id) }}">Order Again</a>
+    <div>----------------------------------------------</div>
+{% endif %}
 {% endfor %}
 {% endblock %}
