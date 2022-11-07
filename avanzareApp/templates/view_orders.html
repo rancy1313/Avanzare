@@ -125,7 +125,6 @@
     {% if order.comment != "" and order.comment is not none %}
         <div>Order Comment: {{ order.comment }}</div>
     {% endif %}
-    <a class="nav-item nav-link" href="{{ url_for('views.deactivate_orders', id=order.id) }}">Set Order to Inactive</a>
     <div>----------------------------------------------</div>
 {% endfor %}
 
