@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User, Menu
+from .models import User, Menu, News
 from werkzeug.security import generate_password_hash, check_password_hash
 from .import db
 from flask_login import login_user, login_required, logout_user, current_user
+import random
 
 auth = Blueprint('auth', __name__)
 # GET request retrieves information
@@ -24,8 +25,17 @@ def start_page():
         db.session.commit()
         items = Menu.query.filter_by(user_id=new_user.id).order_by(Menu.name).all()
         return render_template("start_page.html", items=items, user=current_user)
+    news = db.session.query(News).order_by(News.id.desc()).all()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
-    return render_template("start_page.html", items=items, user=current_user)
+    count =0
+    for post in news:
+        post = random.choice(news)
+        post.featured = "TRUE"
+        count+=1
+        if count == 5:
+            break
+    #news = News.query.filter_by(featured="TRUE").order_by(News.featured).all()
+    return render_template("start_page.html", news=news, items=items, user=current_user)
 
 '''
 @auth.route('/edit_menu', methods=['GET', 'POST'])

@@ -50,11 +50,16 @@
     {% endfor %}
     </table>
 
+    {% if "${:,.2f}".format(order.taxes) == "$-0.00" %}
+       <b>Taxes: $0.00</b>
+    {% else %}
+        <b>Taxes: {{ "${:,.2f}".format(order.taxes) }}</b>
+    {% endif %}
     <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-    {% if "${:,.2f}".format(order.total) == "$-0.00" %}
+    {% if "${:,.2f}".format(order.total + order.taxes) == "$-0.00" %}
        <h3>Total: $0.00</h3>
     {% else %}
-        <h3>Total: {{ "${:,.2f}".format(order.total) }}</h3>
+        <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
     {% endif %}
     <!-- only show order comment if there is one -->
     {% if order.comment != "" and order.comment is not none %}
@@ -65,6 +70,27 @@
 {% endfor %}
 
 <h1 align="center">News</h1>
+        <ul class="list-group list-group-flush" id="items">
+            {% set print_once = 1 %}
+            {% for news_type in ["SALE", "NEW ITEM", "IMPORTANT"] %}
+                {% if print_once == 1 %}
+                    <h3 align="center"> {{ news_type }} </h3>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for news_post in news %}
+                    {% if news_post.news_type == news_type %}
+                      <li class="list-group-item">
+                          {{ news_post.title }}
+
+                          <br />
+                          {{ news_post.text }}
+                          <br />
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+        </ul>
 
 {% set count = namespace(value=0) %}
 {% for order in user.orders %}
@@ -123,10 +149,10 @@
     </table>
 
     <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-    {% if "${:,.2f}".format(order.total) == "$-0.00" %}
+    {% if "${:,.2f}".format(order.total + order.taxes) == "$-0.00" %}
        <h3>Total: $0.00</h3>
     {% else %}
-        <h3>Total: {{ "${:,.2f}".format(order.total) }}</h3>
+        <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
     {% endif %}
     {% if order.comment != "" and order.comment is not none %}
         <div>Order Comment: {{ order.comment }}</div>

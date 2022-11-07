@@ -3,16 +3,6 @@
 
     <h1 align="center"> Hello {{ user.first_name }}, here is your order. </h1>
 
-{% for item in new_order.items %}
-    {{ item.name }}
-    {% set tmp = "$" + (item.price | string) %}
-    {{ tmp }}
-    <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    <br />
-{% endfor %}
-
 {% set lst =  [] %}
 
 <table style="width:100%">
@@ -36,7 +26,7 @@
             <tr>
             <th>{{ item.name }}</th>
             <th>{{ count.value }}</th>
-            {% set tmp = (item.price | int) %}
+            {% set tmp = (item.price | float) %}
             <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
                 <th>
                     <form action="/add-to-order/{{ new_order.id }}" method="POST">
@@ -51,9 +41,10 @@
                                             name="itemId2">{{item.id}}</textarea>
                         <button>Del</button>
                     </form>
-                <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
+                    <!-- obsolete now
+                    <button type="button" class="close" onClick="deleteOrderItem({{ item.id }})">
                     <span aria-hidden="true">&times;</span>
-                </button>
+                </button>-->
                 </th>
             </tr>
 
@@ -67,13 +58,18 @@
 {% endfor %}
 </table>
 
-<!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-{% if "${:,.2f}".format(new_order.total) == "$-0.00" %}
-   <h3>Total: $0.00</h3>
+{% if "${:,.2f}".format(new_order.taxes) == "$-0.00" %}
+   <h3>Taxes: $0.00</h3>
 {% else %}
-    <h3>Total: {{ "${:,.2f}".format(new_order.total) }}</h3>
+    <h3>Taxes: {{ "${:,.2f}".format(new_order.taxes) }}</h3>
 {% endif %}
 
+<!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
+{% if "${:,.2f}".format(new_order.total + new_order.taxes) == "$-0.00" %}
+   <h3>Total: $0.00</h3>
+{% else %}
+    <h3>Total: {{ "${:,.2f}".format(new_order.total + new_order.taxes) }}</h3>
+{% endif %}
 
 <form method="POST">
     <div>Have any comments or requests</div>

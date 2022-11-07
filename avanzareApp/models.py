@@ -41,6 +41,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     comment = db.Column(db.String(10000))
+    taxes = db.Column(db.Float)
     total = db.Column(db.Float)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -49,6 +50,15 @@ class Order(db.Model):
     # too solutions use the relationship list by using a new Menu db with no primary kery for name
     # private list variable??
     items = db.relationship('Menu_order')
+
+class News(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150))
+    text = db.Column(db.String(10000))
+    news_type = db.Column(db.String(150))
+    featured = db.Column(db.String(10))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+
 
 
 

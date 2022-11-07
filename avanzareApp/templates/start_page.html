@@ -3,6 +3,21 @@
 
 <h1 align="center">Hello, Welcome to Avanzare!!!</h1>
 
+<h1 align="center">FEATURED</h1>
+        <ul class="list-group list-group-flush" id="items">
+              {% for news_post in news %}
+                    {% if news_post.featured == "TRUE" %}
+                      <li class="list-group-item">
+                          {{ news_post.title }}
+
+                          <br />
+                          {{ news_post.text }}
+                          <br />
+                      </li>
+                    {% endif %}
+              {% endfor %}
+        </ul>
+
 <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" >
             {% set print_once = 1 %}

@@ -25,6 +25,13 @@ function deleteOrderItem(itemId) {
   });
 } ///this will refresh the page after deletes
 
-
+function deleteNewsPost(news_postId) {
+  fetch("/delete-news-post", {
+    method: "POST",
+    body: JSON.stringify({ news_postId: news_postId }),
+  }).then((_res) => {
+    window.location.href = "/create-news";
+  });
+} ///this will refresh the page after deletes
 
 

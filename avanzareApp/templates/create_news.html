@@ -1,0 +1,59 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% block content %}
+
+<form method="POST">
+    <h1 align="center">Create news post</h1>
+    <div class="form-group">
+        <label for="title" >News Title</label>
+        <input
+                type="title"
+                class="form-control"
+                id="title"
+                name="title"
+                placeholder="ENTER NEWS TITLE"
+        />
+    </div>
+
+    <div>Text</div>
+    <textarea name="text" id="text" class="form-control"></textarea>
+
+    <div>News Type</div>
+    <select class="selectpicker" type="news_type" id="news_type" name="news_type">
+      <option>SALE</option>
+      <option>NEW ITEM</option>
+      <option>IMPORTANT</option>
+    </select>
+
+    <br />
+    <br />
+    <button type="submit" class="btn btn-primary">Add Item</button>
+</form>
+
+<h1 align="center"> Active News </h1>
+        <ul class="list-group list-group-flush" id="items">
+            {% set print_once = 1 %}
+            {% for news_type in ["SALE", "NEW ITEM", "IMPORTANT"] %}
+                {% if print_once == 1 %}
+                    <h3 align="center"> {{ news_type }} </h3>
+                    {% set print_once = 0 %}
+                {% endif %}
+              {% for news_post in news %}
+                    {% if news_post.news_type == news_type %}
+                      <li class="list-group-item">
+                          {{ news_post.title }}
+
+                          <br />
+                          {{ news_post.text }}
+                          <br />
+                          <button type="button" class="close" onClick="deleteNewsPost({{ news_post.id }})">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                      </li>
+                    {% endif %}
+              {% endfor %}
+            {% set print_once = 1 %}
+            {% endfor %}
+        </ul>
+
+
+{% endblock %}
