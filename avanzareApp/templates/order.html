@@ -78,6 +78,7 @@
     <button type="submit" class="btn btn-primary">Complete Order</button>
 </form>
 
+
     <h1 align="center"> DINNER MENU </h1>
         <ul class="list-group list-group-flush" id="items">
             {% set gf = "(GF)" %}
@@ -108,6 +109,9 @@
               {% for item in items %}
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
+                        <table style="width:100%">
+                            <tr>
+                                <th>
 
                           {{ item.name }}
                           {% set tmp = "$" + (item.price | string) %}
@@ -125,6 +129,8 @@
                           <br />
                           {{ item.description }}
                           <br />
+                                </th>
+                                <th>
                           <form action="/add-to-order/{{ new_order.id }}" method="POST">
                               <div class="form-group">
                                     <label for="quantity">Quantity: </label>
@@ -163,7 +169,18 @@
                                             name="complete_order">FALSE</textarea>
                               </div>
                               <button>Add to order</button>
+
                           </form>
+
+                            </th>
+                                <th>
+                                    {% set tmp = item.name + '.jpg' %}
+                                    <div align="right">
+                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                                    </div>
+                                </th>
+                            </tr>
+                        </table>
                       </li>
                     {% endif %}
               {% endfor %}

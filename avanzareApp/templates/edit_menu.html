@@ -1,7 +1,8 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
+
     <h3 align="center">Add an item to the menu</h3>
     <div class="form-group">
         <label for="name" >Dish Name</label>
@@ -68,7 +69,9 @@
       </optgroup>
     </select>
 
-
+    <br />
+    <div>Item Picture</div>
+    <input type="file" name="file" accept="image/*"/>
     <br />
     <br />
     <button type="submit" class="btn btn-primary">Add Item</button>
@@ -100,26 +103,38 @@
               {% for item in items %}
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
-                          {{ item.name }}
+                        <table style="width:100%">
+                            <tr>
+                                <th>
+                                    {{ item.name }}
+                                    {% if item.gluten_free == "GLUTEN FREE" %}
+                                        <i>{{ "(GF)" }}</i>
+                                    {% endif %}
+                                    {% if item.vegan == "VEGAN" %}
+                                        <i>{{ "(V)" }}</i>
+                                    {% endif %}
 
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                            <i>{{ "(GF)" }}</i>
-                          {% endif %}
+                                    <!--item.price is a float so needs to be converted to string to display $ format-->
+                                    {% set tmp = "$" + (item.price | string) %}
+                                    {{ tmp }}
+                                    <br />
+                                    {{ item.description }}
+                                    <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
+                                    <button type="button" onClick="deleteMenuItem({{ item.id }})">
+                                        <span aria-hidden="true">&times; Delete Entry</span>
+                                    </button>
+                                </th>
 
-                          {% if item.vegan == "VEGAN" %}
-                            <i>{{ "(V)" }}</i>
-                          {% endif %}
-
-                          <!--item.price is a float so needs to be converted to string to display $ format-->
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                            <br />
-                              <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                          <button type="button" class="close" onClick="deleteMenuItem({{ item.id }})">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                                <th>
+                                <br />
+                                    {% set tmp = item.name + '.jpg' %}
+                                    <div align="right">
+                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                                    </div>
+                                <br />
+                                </th>
+                            </tr>
+                        </table>
                       </li>
                     {% endif %}
               {% endfor %}

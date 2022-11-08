@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     <h3 align="center">Edit menu information</h3>
 
     <div>Edit Name: {{item.name}}</div>
@@ -54,6 +54,15 @@
       </optgroup>
     </select>
     <br />
+    <br />
+    <div>Item Picture</div>
+    <input type="file" name="file" accept="image/*"/>
+    <br />
+    {% set tmp = item.name + '.jpg' %}
+    <div>
+        Previous Image:
+        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+    </div>
     <br />
     <button type="submit" class="btn btn-primary">Edit Item</button>
 

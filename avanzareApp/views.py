@@ -1,8 +1,12 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, send_from_directory
 from flask_login import login_required, current_user
 from .models import Note, Menu, User, Order, Menu_order, News
 from . import db
 import json
+import os
+
+# for image uploading
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 views = Blueprint('views', __name__)
 # handling floating point errors
@@ -20,6 +24,11 @@ views = Blueprint('views', __name__)
 # pictures of food??
 # {% if user.email == 'headChef@gmail.com" %}
 # something like <a class="nav-item nav-link" id="home" href="/add_menu">add_menu</a>
+
+@views.route('/upload/<filename>')
+def send_image(filename):
+    return send_from_directory('images', filename)
+
 
 #decorator
 @views.route('/add-menu-item', methods=['GET', 'POST'])
@@ -66,6 +75,24 @@ def add_menu_item():
             db.session.add(new_menu_item)
             db.session.commit()
             #login_user(user, remember=True)
+
+            target = os.path.join(APP_ROOT, 'images/')
+            print(target)
+            
+            if not os.path.isdir(target):
+                os.mkdir(target)
+
+            for file in request.files.getlist('file'):
+                print("file: ", file)
+                print('filename: ', file.filename)
+                if file.filename == "":
+                    flash('Image was not selected.', category="error")
+                    return redirect(url_for('views.add_menu_item'))
+                filename = new_menu_item.name + '.jpg'
+                destination = "/".join([target, filename])
+                print(destination)
+                file.save(destination)
+
             flash('New item added to menu!!!', category="success")
             user = User.query.filter(User.email == 'headChef@gmail.com').first()
             items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
@@ -217,12 +244,13 @@ def add_to_order(order_id):
         user = User.query.filter(User.email == 'headChef@gmail.com').first()
         items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
         return render_template('order.html', items=items, new_order=new_order, user=current_user)
-
+    print('hi')
     if request.method == "POST" and complete_order != 'FALSE' and delete_quantity is None:
         new_order = db.session.query(Order).order_by(Order.id.desc()).first()
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
         new_order.is_active = "Active"
+
         flash('Order Submitted!!!', category="success")
         #db.session.add(new_order)
         db.session.commit()
@@ -247,7 +275,10 @@ def delete_item():
     item = json.loads(request.data)
     itemId = item['itemId']
     item = Menu.query.get(itemId)
-
+    # delete img associated with menu item b/c new dishes with same name could be added
+    filename = item.name + '.jpg'
+    target = os.path.join(APP_ROOT, 'images/')
+    os.unlink(os.path.join(target, filename))
     if item:
         if item.user_id == current_user.id:
             db.session.delete(item)
@@ -316,6 +347,7 @@ def refresh_order():
 
 @views.route('/edit_redirect/<int:id>', methods=['GET', 'POST'])
 def edit_redirect(id):
+    print('hgbgh')
     item = Menu.query.filter(Menu.id == id).first()
     if request.method == 'POST':
         name = request.form.get('name')
@@ -334,6 +366,35 @@ def edit_redirect(id):
         menu_type = request.form.get('menu_type')
         gluten_free = request.form.get('gluten_free')
         vegan = request.form.get('vegan')
+        print('testtttt')
+        # two cases for images.
+        # 1. Old img is kept and needs to make sure img name matches item name
+        # 2. new img is selected for item and need to delete old img to replace it
+        target = os.path.join(APP_ROOT, 'images/')
+        if not os.path.isdir(target):
+            os.mkdir(target)
+        k = request.files.getlist('file')
+        print(k)
+        for file in request.files.getlist('file'):
+            print('yeeehaw')
+            print(file.filename)
+            if file.filename == "":
+                # tmp is the name of the img someone changes the name of the item and does not change the img
+                # the imgs are not connected by a db and are connected by name so if the item name changes then the img name needs to change
+                # tmp = name is the new name/ if the name is kept the same then nothing gets overwritten
+                # tmp2 is the old item name
+                tmp = target + name + '.jpg'
+                tmp2 = target + item.name + '.jpg'
+                os.renames(tmp2, tmp)
+            else:
+                # if a new image is selected then the old one should be deleted, so it doesn't take up space
+                filename = item.name + '.jpg'
+                target = os.path.join(APP_ROOT, 'images/')
+                os.unlink(os.path.join(target, filename))
+                # save new img after
+                filename = name + '.jpg'
+                destination = "/".join([target, filename])
+                file.save(destination)
 
         item.name = name
         item.price = price
@@ -341,6 +402,7 @@ def edit_redirect(id):
         item.menu_type = menu_type
         item.gluten_free = gluten_free
         item.vegan = vegan
+
         flash('Item has been edited!!!', category="success")
         db.session.commit()
         return redirect(url_for('views.add_menu_item'))
@@ -498,3 +560,4 @@ def delete_news_post():
     else:
         flash('error!', category="error")
     return jsonify({})
+

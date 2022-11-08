@@ -44,6 +44,9 @@
               {% for item in items %}
                     {% if item.menu_type == menu %}
                       <li class="list-group-item">
+                          <table style="width:100%">
+                            <tr>
+                                <th>
                           {{ item.name }}
 
                           {% if item.gluten_free == "GLUTEN FREE" %}
@@ -60,6 +63,15 @@
                           {{ tmp }}
                           <br />
                           {{ item.description }}
+                                </th>
+                                <th>
+                                    {% set tmp = item.name + '.jpg' %}
+                                    <div align="right">
+                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                                    </div>
+                                </th>
+                            </tr>
+                          </table>
                       </li>
                     {% endif %}
               {% endfor %}
