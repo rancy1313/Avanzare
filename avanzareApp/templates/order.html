@@ -2,7 +2,9 @@
 {% block content %}
 
     <h1 align="center"> Hello {{ user.first_name }}, here is your order. </h1>
-
+<h1>
+    <a id="order" href="/order">Clear Order</a>
+</h1>
 {% set lst =  [] %}
 
 <table style="width:100%">
