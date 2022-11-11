@@ -24,7 +24,6 @@ def create_app():
     # we need to import to make sure it defines the databases before you create them
     from .models import User, Note
 
-    #create_database(app)
     # this is new code stack overflow
     # db was not created in same directory take note
     with app.app_context():
@@ -42,9 +41,3 @@ def create_app():
 
     return app
 
-# this function is outdated because sql was changed now it no longer overwrites an existing db
-def create_database(app):
-    # this checks to see if the db has been created if so we do not want to override info
-    if not path.exists('website/' + DB_NAME):
-        #db.create_all(app=app)
-        print("Created Database!")

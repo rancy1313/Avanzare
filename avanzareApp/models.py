@@ -4,6 +4,7 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+# this needs to be deleted. no longer in use
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.String(10000))
@@ -15,6 +16,8 @@ class Note(db.Model):
     # thats why it is user.id and not User.id
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+# this class is for the chef to create a menu item
+# just has info about the item created by the chef
 class Menu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True)
@@ -26,6 +29,11 @@ class Menu(db.Model):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+# this class is for the user to add an item to an order
+# At first, I found it best to separate menu items for orders and menu items for editing the menu because
+# the menu order didn't require a user id and the Menu item for editing didn't require an order id
+# maybe I could have just used one class anyway, but I made it work with two
+# Might consider just combining these two and using the variables when needed
 class Menu_order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
@@ -37,6 +45,8 @@ class Menu_order(db.Model):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
 
+# this class is to structure an order and has info about the order
+# and it has a list of items related to this order
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
@@ -51,6 +61,7 @@ class Order(db.Model):
     # private list variable??
     items = db.relationship('Menu_order')
 
+# this class is for the chef to create news posts
 class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150))
@@ -59,9 +70,10 @@ class News(db.Model):
     featured = db.Column(db.String(10))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-
-
-
+# structure for a users account
+# a lot more variables can be added here in the future
+# I was considering adding one for if the user can set their account to have allergies
+# and if they do then their orders will appear red
 class User(db.Model, UserMixin):
     # most cases you'll use columns
     # id is an integer and is the primary key to identifying a user

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link
@@ -17,15 +16,35 @@
     />
     <link rel="stylesheet" href="style.css">
     <title>{% block title%}Home{% endblock %}</title>
-
+    <style>
+        .navbar-dark {
+            background:#CE5B54;
+        }
+        .blackLine {
+            border:1px solid black;
+        }
+        .container2 {
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+        .text {
+            font-size: 20px;
+            padding-left: 40px;
+        }
+        nav{
+            height:150px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#" align="center">
+            <img src="https://scontent-ort2-1.xx.fbcdn.net/v/t39.30808-6/305351972_506911318104588_5349177257008154172_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=TMH18Lg-NkcAX_uUgfP&_nc_ht=scontent-ort2-1.xx&oh=00_AfB37BpFxG2Np-d_dQ3aKFYDJF_Lk9r4_2jDBgBOo4qv8w&oe=637046EB" alt="..." height="100">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbar">
             <div class="navbar-nav">
                 {% if user.is_authenticated %}
@@ -34,7 +53,6 @@
                         <a class="nav-item nav-link" id="view_orders" href="/view-orders">View Orders</a>
                         <a class="nav-item nav-link" id="create_news" href="/create-news">Create News</a>
                     {% endif %}
-                    <a class="nav-item nav-link" id="home" href="/">Home</a>
                     <a class="nav-item nav-link" id="user_home" href="/user_home">User Home</a>
                     <a class="nav-item nav-link" id="order" href="/order">Order</a>
                     <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
@@ -46,7 +64,6 @@
             </div>
         </div>
     </nav>
-
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
@@ -68,12 +85,11 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-
+    <br />
     <div class="container">
     {% block content %}
     {% endblock %}
     </div>
-
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -89,11 +105,9 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
-
     <script
       type="text/javascript"
       src="{{ url_for('static', filename='index.js') }}"
     ></script>
-
 </body>
 </html>

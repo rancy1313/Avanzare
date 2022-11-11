@@ -2,8 +2,7 @@
 {% block content %}
 
 <form method="POST" enctype="multipart/form-data">
-
-    <h3 align="center">Add an item to the menu</h3>
+    <h1 align="center">Add an item to the menu</h1>
     <div class="form-group">
         <label for="name" >Dish Name</label>
         <input
@@ -36,39 +35,34 @@
                 placeholder="ENTER DISH DESCRIPTION"
         />
     </div>
-
     <div>Gluten Free Availability</div>
     <select class="selectpicker" type="gluten_free" id="gluten_free" name="gluten_free">
         <option>NO</option>
         <option>GLUTEN FREE</option>
     </select>
-
     <div>Vegan Availability</div>
     <select class="selectpicker" type="vegan" id="vegan" name="vegan">
         <option>NO</option>
         <option>VEGAN</option>
     </select>
-
     <div>Menu Type</div>
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
-      <optgroup label="DINNER MENU" >
-        <option>APPETIZERS</option>
-        <option>SALADS</option>
-        <option>PIZZAS</option>
-        <option>PASTAS</option>
-        <option>ENTREES</option>
-        <option>SIDES</option>
-      </optgroup>
-
-      <option>DESSERT MENU</option>
-      <option>AFTER DINNER DRINKS</option>
-      <option>COCKTAILS</option>
-      <optgroup label="BEER">
-        <option>BOTTLE</option>
-        <option>DRAFT</option>
-      </optgroup>
+        <optgroup label="DINNER MENU" >
+            <option>APPETIZERS</option>
+            <option>SALADS</option>
+            <option>PIZZAS</option>
+            <option>PASTAS</option>
+            <option>ENTREES</option>
+            <option>SIDES</option>
+        </optgroup>
+        <option>DESSERT MENU</option>
+        <option>AFTER DINNER DRINKS</option>
+        <option>COCKTAILS</option>
+        <optgroup label="BEER">
+            <option>BOTTLE</option>
+            <option>DRAFT</option>
+        </optgroup>
     </select>
-
     <br />
     <div>Item Picture</div>
     <input type="file" name="file" accept="image/*"/>
@@ -76,71 +70,69 @@
     <br />
     <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
-
+<br />
+<div class="blackLine">
+    <br />
     <h1 align="center"> DINNER MENU </h1>
-        <ul class="list-group list-group-flush" id="items">
-            {% set print_once = 1 %}
-            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
-                {% if print_once == 1 %}
-                    {% if menu == "DESSERT MENU" %}
-                        <h1 align="center"> DESSERTS </h1>
-                        {% set print_once = 0 %}
-                    {% elif menu == "AFTER DINNER DRINKS" %}
-                        <h1 align="center"> AFTER DINNER DRINKS </h1>
-                        {% set print_once = 0 %}
-                    {% elif menu == "COCKTAILS" %}
-                        <h1 align="center"> COCKTAILS </h1>
-                        {% set print_once = 0 %}
-                    {% elif menu == "BOTTLE" %}
-                        <h1 align="center"> BEER </h1>
-                        <div align="center">{{ menu }}</div>
-                        {% set print_once = 0 %}
-                    {% else %}
-                        <div align="center">{{ menu }}</div>
-                        {% set print_once = 0 %}
-                    {% endif %}
+    <ul class="list-group list-group-flush" id="items">
+        {% set print_once = 1 %}
+        {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
+            {% if print_once == 1 %}
+                {% if menu == "DESSERT MENU" %}
+                    <h1 align="center"> DESSERTS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "AFTER DINNER DRINKS" %}
+                    <h1 align="center"> AFTER DINNER DRINKS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "COCKTAILS" %}
+                    <h1 align="center"> COCKTAILS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "BOTTLE" %}
+                    <h1 align="center"> BEER </h1>
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% else %}
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
                 {% endif %}
-              {% for item in items %}
-                    {% if item.menu_type == menu %}
-                      <li class="list-group-item">
-                        <table style="width:100%">
-                            <tr>
-                                <th>
-                                    {{ item.name }}
-                                    {% if item.gluten_free == "GLUTEN FREE" %}
-                                        <i>{{ "(GF)" }}</i>
-                                    {% endif %}
-                                    {% if item.vegan == "VEGAN" %}
-                                        <i>{{ "(V)" }}</i>
-                                    {% endif %}
-
-                                    <!--item.price is a float so needs to be converted to string to display $ format-->
-                                    {% set tmp = "$" + (item.price | string) %}
-                                    {{ tmp }}
-                                    <br />
-                                    {{ item.description }}
-                                    <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                                    <button type="button" onClick="deleteMenuItem({{ item.id }})">
-                                        <span aria-hidden="true">&times; Delete Entry</span>
-                                    </button>
-                                </th>
-
-                                <th>
+            {% endif %}
+            {% for item in items %}
+                {% if item.menu_type == menu %}
+                    <li class="list-group-item">
+                        <div class="container2" align="center">
+                            <div class="image">
+                                {% set tmp = item.name + '.jpg' %}
+                                <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                            </div>
+                            <div class="text">
+                                {{ item.name }}
+                                {% if item.gluten_free == "GLUTEN FREE" %}
+                                    <i>{{ "(GF)" }}</i>
+                                {% endif %}
+                                {% if item.vegan == "VEGAN" %}
+                                    <i>{{ "(V)" }}</i>
+                                {% endif %}
+                                <!--item.price is a float so needs to be converted to string to display $ format-->
+                                {% set tmp = "$" + (item.price | string) %}
+                                {{ tmp }}
                                 <br />
-                                    {% set tmp = item.name + '.jpg' %}
-                                    <div align="right">
-                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
-                                    </div>
-                                <br />
-                                </th>
-                            </tr>
-                        </table>
-                      </li>
-                    {% endif %}
-              {% endfor %}
-            {% set print_once = 1 %}
+                                {{ item.description }}
+                                <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
+                                <button type="button" onClick="deleteMenuItem({{ item.id }})">
+                                    <span aria-hidden="true">&times; Delete Entry</span>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                {% endif %}
             {% endfor %}
-        </ul>
+            {% set print_once = 1 %}
+        {% endfor %}
+    </ul>
+    <br />
+</div>
+<br />
+<br />
 
 {% endblock %}
 

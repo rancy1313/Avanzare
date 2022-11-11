@@ -2,89 +2,87 @@
 {% block content %}
 
 <h1 align="center">Hello, Welcome to Avanzare!!!</h1>
-
 <h1 align="center">FEATURED</h1>
-        <ul class="list-group list-group-flush" id="items">
-              {% for news_post in news %}
-                    {% if news_post.featured == "TRUE" %}
-                      <li class="list-group-item">
-                          {{ news_post.title }}
-
-                          <br />
-                          {{ news_post.text }}
-                          <br />
-                      </li>
+<ul class="list-group list-group-flush" id="items">
+    {% for news_post in news %}
+        {% if news_post.featured == "TRUE" %}
+            <li class="list-group-item">
+                {{ news_post.title }}
+                <br />
+                {{ news_post.text }}
+                <br />
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+<br />
+<div class="blackLine">
+    <br />
+    <h1 align="center"> DINNER MENU </h1>
+    <ul class="list-group list-group-flush" >
+        {% set print_once = 1 %}
+        {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
+            {% if print_once == 1 %}
+                {% if menu == "DESSERT MENU" %}
+                    <h1 align="center"> DESSERTS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "AFTER DINNER DRINKS" %}
+                    <h1 align="center"> AFTER DINNER DRINKS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "COCKTAILS" %}
+                    <h1 align="center"> COCKTAILS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "BOTTLE" %}
+                    <h1 align="center"> BEER </h1>
+                    <div align="center">{{ menu }}</div>
+                    {% set print_once = 0 %}
+                {% else %}
+                    <div align="center">{{ menu }}</div>
+                    {% if menu == "PIZZAS" %}
+                        <p align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
                     {% endif %}
-              {% endfor %}
-        </ul>
-
-<h1 align="center"> DINNER MENU </h1>
+                    {% set print_once = 0 %}
+                {% endif %}
+            {% endif %}
+            {% for item in items %}
+                {% if item.menu_type == menu %}
+                    <li class="list-group-item">
+                        <div class="container2">
+                            <div class="image">
+                                {% set tmp = item.name + '.jpg' %}
+                                <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                            </div>
+                            <di class="text" align="center">
+                                {{ item.name }}
+                                {% if item.gluten_free == "GLUTEN FREE" %}
+                                    <i>{{ "(GF)" }}</i>
+                                {% endif %}
+                                {% if item.vegan == "VEGAN" %}
+                                    <i>{{ "(V)" }}</i>
+                                {% endif %}
+                                <br />
+                                {% set tmp = "$" + (item.price | string) %}
+                                {{ tmp }}
+                                <br />
+                                {{ item.description }}
+                            </di>
+                        </div>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% set print_once = 1 %}
+        {% endfor %}
+        <br />
+    </ul>
+</div>
+<br />
+<br />
+<div class="dropdown" align="center">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        GLUTEN FREE
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <ul class="list-group list-group-flush" >
-            {% set print_once = 1 %}
-            {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
-                {% if print_once == 1 %}
-                    {% if menu == "DESSERT MENU" %}
-                        <h1 align="center"> DESSERTS </h1>
-                        {% set print_once = 0 %}
-                    {% elif menu == "AFTER DINNER DRINKS" %}
-                        <h1 align="center"> AFTER DINNER DRINKS </h1>
-                        {% set print_once = 0 %}
-                    {% elif menu == "COCKTAILS" %}
-                        <h1 align="center"> COCKTAILS </h1>
-                        {% set print_once = 0 %}
-                    {% elif menu == "BOTTLE" %}
-                        <h1 align="center"> BEER </h1>
-                        <div align="center">{{ menu }}</div>
-                        {% set print_once = 0 %}
-                    {% else %}
-                        <div align="center">{{ menu }}</div>
-                        {% set print_once = 0 %}
-                    {% endif %}
-                {% endif %}
-              {% for item in items %}
-                    {% if item.menu_type == menu %}
-                      <li class="list-group-item">
-                          <table style="width:100%">
-                            <tr>
-                                <th>
-                          {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                            <i>{{ "(GF)" }}</i>
-                          {% endif %}
-
-                          {% if item.vegan == "VEGAN" %}
-                            <i>{{ "(V)" }}</i>
-                          {% endif %}
-
-                          <br />
-
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                                </th>
-                                <th>
-                                    {% set tmp = item.name + '.jpg' %}
-                                    <div align="right">
-                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
-                                    </div>
-                                </th>
-                            </tr>
-                          </table>
-                      </li>
-                    {% endif %}
-              {% endfor %}
-            {% set print_once = 1 %}
-            {% endfor %}
-        </ul>
-
-<div class="dropdown" align="center">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    GLUTEN FREE
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <ul class="list-group list-group-flush" >
             {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
@@ -92,41 +90,36 @@
                     <div align="center">{{ menu }}</div>
                     {% set print_once = 0 %}
                 {% endif %}
-              {% for item in items %}
+                {% for item in items %}
                     {% if item.menu_type == menu and item.gluten_free == "GLUTEN FREE" %}
-                      <li class="list-group-item">
-                          {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                            <i>{{ "(GF)" }}</i>
-                          {% endif %}
-
-                          {% if item.vegan == "VEGAN" %}
-                            <i>{{ "(V)" }}</i>
-                          {% endif %}
-
-                          <br />
-
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                      </li>
+                        <li class="list-group-item" align="center">
+                            {{ item.name }}
+                            {% if item.gluten_free == "GLUTEN FREE" %}
+                                <i>{{ "(GF)" }}</i>
+                            {% endif %}
+                            {% if item.vegan == "VEGAN" %}
+                                <i>{{ "(V)" }}</i>
+                            {% endif %}
+                            <br />
+                            {% set tmp = "$" + (item.price | string) %}
+                            {{ tmp }}
+                            <br />
+                            {{ item.description }}
+                        </li>
                     {% endif %}
-              {% endfor %}
-            {% set print_once = 1 %}
+                {% endfor %}
+                {% set print_once = 1 %}
             {% endfor %}
         </ul>
-
-  </div>
+    </div>
 </div>
-
+<br />
 <div class="dropdown" align="center">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    VEGAN
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <ul class="list-group list-group-flush" >
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        VEGAN
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <ul class="list-group list-group-flush" >
             {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
@@ -134,35 +127,34 @@
                     <div align="center">{{ menu }}</div>
                     {% set print_once = 0 %}
                 {% endif %}
-              {% for item in items %}
+                {% for item in items %}
                     {% if item.menu_type == menu and item.vegan == "VEGAN" %}
-                      <li class="list-group-item">
-                          {{ item.name }}
-
-                          {% if item.gluten_free == "GLUTEN FREE" %}
-                            <i>{{ "(GF)" }}</i>
-                          {% endif %}
-
-                          {% if item.vegan == "VEGAN" %}
-                            <i>{{ "(V)" }}</i>
-                          {% endif %}
-
-                          <br />
-
-                          {% set tmp = "$" + (item.price | string) %}
-                          {{ tmp }}
-                          <br />
-                          {{ item.description }}
-                      </li>
+                        <li class="list-group-item" align="center">
+                            {{ item.name }}
+                            {% if item.gluten_free == "GLUTEN FREE" %}
+                                <i>{{ "(GF)" }}</i>
+                            {% endif %}
+                            {% if item.vegan == "VEGAN" %}
+                                <i>{{ "(V)" }}</i>
+                            {% endif %}
+                            <br />
+                            {% set tmp = "$" + (item.price | string) %}
+                            {{ tmp }}
+                            <br />
+                            {{ item.description }}
+                        </li>
                     {% endif %}
-              {% endfor %}
-            {% set print_once = 1 %}
+                {% endfor %}
+                {% set print_once = 1 %}
             {% endfor %}
         </ul>
-
-  </div>
+    </div>
 </div>
-
+<br />
+<br />
+<p align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
+comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></p>
+{% include "footer.html" %}
 
 {% endblock %}
 

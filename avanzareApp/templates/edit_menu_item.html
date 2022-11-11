@@ -1,20 +1,18 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
+
 <form method="POST" enctype="multipart/form-data">
     <h3 align="center">Edit menu information</h3>
-
     <div>Edit Name: {{item.name}}</div>
     <textarea   type="name"
                 class="form-control"
                 id="name"
                 name="name">{{item.name}}</textarea>
-
     <div>Edit Price: {{item.price}}</div>
     <textarea   type="price"
                 class="form-control"
                 id="price"
                 name="price">{{item.price}}</textarea>
-
     <br />
     <div>Edit Description: {{item.description}}</div>
     <textarea   type="description"
@@ -27,31 +25,28 @@
         <option>NO</option>
         <option>GLUTEN FREE</option>
     </select>
-
     <div>Vegan Availability: {{ item.vegan }}</div>
     <select class="selectpicker" type="vegan" id="vegan" name="vegan">
         <option>NO</option>
         <option>VEGAN</option>
     </select>
-
     <div>Menu Type: {{ item.menu_type }}</div>
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
-      <optgroup label="DINNER MENU" >
-        <option>APPETIZERS</option>
-        <option>SALADS</option>
-        <option>PIZZAS</option>
-        <option>PASTAS</option>
-        <option>ENTREES</option>
-        <option>SIDES</option>
-      </optgroup>
-
-      <option>DESSERT MENU</option>
-      <option>AFTER DINNER DRINKS</option>
-      <option>COCKTAILS</option>
-      <optgroup label="BEER">
-        <option>BOTTLE</option>
-        <option>DRAFT</option>
-      </optgroup>
+        <optgroup label="DINNER MENU" >
+            <option>APPETIZERS</option>
+            <option>SALADS</option>
+            <option>PIZZAS</option>
+            <option>PASTAS</option>
+            <option>ENTREES</option>
+            <option>SIDES</option>
+        </optgroup>
+        <option>DESSERT MENU</option>
+        <option>AFTER DINNER DRINKS</option>
+        <option>COCKTAILS</option>
+        <optgroup label="BEER">
+            <option>BOTTLE</option>
+            <option>DRAFT</option>
+        </optgroup>
     </select>
     <br />
     <br />
@@ -65,7 +60,7 @@
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Edit Item</button>
-
 </form>
+<br />
 
 {% endblock %}
