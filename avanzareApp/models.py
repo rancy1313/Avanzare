@@ -33,7 +33,10 @@ class Menu(db.Model):
 # At first, I found it best to separate menu items for orders and menu items for editing the menu because
 # the menu order didn't require a user id and the Menu item for editing didn't require an order id
 # maybe I could have just used one class anyway, but I made it work with two
-# Might consider just combining these two and using the variables when needed
+# Might consider just combining these two and using the variables when needed.
+# MENU_ORDER WAS CREATED BECAUSE MENU ITEMS ARE SUPPOSED TO BE UNIQUE SO YOU WOULDN'T BE ABLE TO CREATE COPIES
+# WHICH WOULD BE NEEDED IF YOU'RE TRYING TO ORDER MORE THAN ONE OF THE SAME ITEM
+# so keeping Menu_order and Menu separate is still viable
 class Menu_order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))

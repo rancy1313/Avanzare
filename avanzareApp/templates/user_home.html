@@ -67,6 +67,7 @@
             <br />
         </div>
     </div>
+    <br />
 {% endfor %}
 <br />
 <h1 align="center">News</h1>
@@ -102,6 +103,7 @@
 
 {% for order in user.orders|reverse %}
     {% if order.is_active != 'Active' %}
+        <br />
         <div class="blackLine">
             <div class="text">
                 {% set lst =  [] %}

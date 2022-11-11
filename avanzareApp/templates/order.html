@@ -65,6 +65,10 @@
     <div>Have any comments or food accommodation requests</div>
     <textarea name="comment" id="comment" class="form-control"></textarea>
     <br />
+    <textarea hidden
+              type="complete_order"
+              id="complete_order"
+              name="complete_order">TRUE</textarea>
     <button type="submit" class="btn btn-primary">Complete Order</button>
 </form>
 <br />
@@ -162,10 +166,6 @@
                                                       type="itemId"
                                                       id="itemId"
                                                       name="itemId">{{item.id}}</textarea>
-                                            <textarea hidden
-                                                      type="complete_order"
-                                                      id="complete_order"
-                                                      name="complete_order">FALSE</textarea>
                                         </div>
                                         <button>Add to order</button>
                                     </form>
