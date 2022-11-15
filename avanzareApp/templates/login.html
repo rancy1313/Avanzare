@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title%}Login{% endblock%}
 {% block content %}
-
+<!-- this page is for a user to log in and make an order or view past orders. Users are directed to user_home after
+ logging in -->
+<!-- form to pass info to login() in auth -->
 <form method="POST">
     <h3 align="center">Login</h3>
     <div class="form-group">
@@ -27,6 +29,13 @@
     <br />
     <button type="submit" class="btn btn-primary">Login</button>
 </form>
-
+<br />
+<div>
+    <!-- this note is only for people who want to view and test this project -->
+    <p>NOTE: this is the info for "ADMIN" account</p>
+    <p>Email: headChef@gmail.com</p>
+    <p>Password: pasta123</p>
+</div>
+<br/>
 {% include "footer.html" %}
 {% endblock %}

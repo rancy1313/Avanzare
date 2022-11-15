@@ -1,6 +1,8 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
-
+<!-- this page is for the chef to create news post that can be seen in the user home and start page -->
+<!-- the chef can enter a news title, description, and news type. The chef can delete any news post too -->
+<!-- form to get news post details for create_news_post() -->
 <form method="POST">
     <h1 align="center">Create news post</h1>
     <div class="form-group">
@@ -25,9 +27,11 @@
     <br />
     <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
+<!-- After a news post is submitted create_news_posts() refreshes page to show new news posts -->
 <h1 align="center"> Active News </h1>
     <ul class="list-group list-group-flush" id="items">
         {% set print_once = 1 %}
+        <!-- Displays the news posts by type -->
         {% for news_type in ["SALE", "NEW ITEM", "IMPORTANT"] %}
             {% if print_once == 1 %}
                 <h3 align="center"> {{ news_type }} </h3>
@@ -40,6 +44,7 @@
                           <br />
                           {{ news_post.text }}
                           <br />
+                          <!-- delete each news post by passing news post id -->
                           <button type="button" class="close" onClick="deleteNewsPost({{ news_post.id }})">
                               <span aria-hidden="true">&times;</span>
                           </button>

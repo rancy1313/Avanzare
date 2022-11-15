@@ -1,6 +1,9 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
-
+<!-- this page is for the chef to edit the menu. They can add an item and the item must have an input for every field or
+ the page will refresh and a warning is flashed. Also, item names are supposed to be unique. The chef can delete and
+ edit any item. The page refreshes after any change to see the updated menu -->
+<!-- form to get info for add_menu_item() -->
 <form method="POST" enctype="multipart/form-data">
     <h1 align="center">Add an item to the menu</h1>
     <div class="form-group">
@@ -71,8 +74,12 @@
     <button type="submit" class="btn btn-primary">Add Item</button>
 </form>
 <br />
+<!-- creates black line around menu -->
 <div class="blackLine">
     <br />
+    <!-- Since DINNER MENU is the first option I included out of the for loop-->
+    <!-- This is one for loop that will create the menu instead of making a for loop for each menu type-->
+    <!-- It loops through the menu types and only shows a header for each type once and displays menu item if menu type matches-->
     <h1 align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" id="items">
         {% set print_once = 1 %}
@@ -96,6 +103,7 @@
                     {% set print_once = 0 %}
                 {% endif %}
             {% endif %}
+            <!-- Items are all the menu items, made by headChef -->
             {% for item in items %}
                 {% if item.menu_type == menu %}
                     <li class="list-group-item">
@@ -117,6 +125,7 @@
                                 {{ tmp }}
                                 <br />
                                 {{ item.description }}
+                                <!-- shows a button to edit and delete menu item by passing id to corresponding function -->
                                 <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
                                 <button type="button" onClick="deleteMenuItem({{ item.id }})">
                                     <span aria-hidden="true">&times; Delete Entry</span>
@@ -127,6 +136,7 @@
                 {% endif %}
             {% endfor %}
             {% set print_once = 1 %}
+        <!-- print once var resets after nested loop goes through all items on the menu -->
         {% endfor %}
     </ul>
     <br />

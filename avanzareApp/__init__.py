@@ -22,7 +22,7 @@ def create_app():
     # its empty in the decorator if it had something it would be /auth/hello
     #app.register_blueprint(auth, url_prefix='/auth/hello')
     # we need to import to make sure it defines the databases before you create them
-    from .models import User, Note
+    from .models import User
 
     # this is new code stack overflow
     # db was not created in same directory take note

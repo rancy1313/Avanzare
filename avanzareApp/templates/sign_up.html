@@ -2,8 +2,12 @@
 {% block title%}Sign Up{% endblock%}
 
 {% block content %}
+<!-- users can sign up for an account and after are directed to the login page. This can be changed to direct them to
+the user's home page -->
+<!-- form to pass variables to sign_up() there are some p tags to describe email and password specifications -->
 <form method="POST">
     <h3 align="center">Sign Up</h3>
+    <p>NO SPECIAL CHARS ALLOWED EXCEPT(@ AND .)</p>
     <div class="form-group">
         <label for="email">Email Address</label>
         <input
@@ -24,6 +28,7 @@
                 placeholder="ENTER FIRST NAME"
         />
     </div>
+    <p>PASSWORD MUST BE AT LEAST 7 CHARACTERS</p>
     <div class="form-group">
         <label for="password1">Password</label>
         <input
@@ -47,6 +52,13 @@
     <br />
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-
+<br />
+<div>
+    <!-- this is only here for people who want to check out the project -->
+    <p>NOTE: this is the info for "ADMIN" account</p>
+    <p>Email: headChef@gmail.com</p>
+    <p>Password: pasta123</p>
+</div>
+<br/>
 {% include "footer.html" %}
 {% endblock %}

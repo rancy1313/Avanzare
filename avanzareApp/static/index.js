@@ -1,19 +1,9 @@
-
 function deleteMenuItem(itemId) {
   fetch("/delete-item", {
     method: "POST",
     body: JSON.stringify({ itemId: itemId }),
   }).then((_res) => {
     window.location.href = "/add-menu-item";
-  });
-} ///this will refresh the page after deletes
-
-function deleteOrderItem(itemId) {
-  fetch("/delete-order-item", {
-    method: "POST",
-    body: JSON.stringify({ itemId: itemId }),
-  }).then((_res) => {
-    window.location.href = "/refresh-order";
   });
 } ///this will refresh the page after deletes
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, send_from_directory
 from flask_login import login_required, current_user
-from .models import Note, Menu, User, Order, Menu_order, News
+from .models import Menu, User, Order, Menu_order, News
 from . import db
 import json
 import os
@@ -32,6 +32,10 @@ def send_image(filename):
 
 
 # this function is to add a menu item if it is a post method and load edit menu html if get method
+# any user can type http://127.0.0.1:5000/add-menu-item to get to this page so it should be changed to only render
+# if user is headChef
+# however, only items made by headChef are ever passed through to the html, so items made by a different user won't
+# ever be displayed
 @views.route('/add-menu-item', methods=['GET', 'POST'])
 @login_required
 def add_menu_item():
@@ -189,7 +193,8 @@ def add_to_order(order_id):
     # I added to delete by quantity feature in this functin it seemed easier to implement it in this function at the time
     # might look into making it its own function or at least changing the name of this function to edit_order()
     delete_quantity = request.form.get('delete_quantity')
-
+    if delete_quantity == "":
+        delete_quantity = 1
     # if delete_quantity is not None then that means something was added to the del by quantity field and a user is
     # trying to delete something from the order
     # I entered an input for both add and delete by quantity fields in the order page and the one that gets processed is
@@ -201,7 +206,7 @@ def add_to_order(order_id):
         item = Menu_order.query.filter(Menu_order.id == item_id2).first()
         new_order = Order.query.filter(Order.id == order_id).first()
         # convert delete_quantity to int in order to loop that many times and delete item
-        delete_quantity = int(request.form.get('delete_quantity'))
+        delete_quantity = int(delete_quantity)
         # if page is refreshed after deleting something then an errors occurs because item becomes None type
         # and tmp_name = item.name[:] causes and issue
         # so in that case refresh page
@@ -317,46 +322,6 @@ def delete_item():
         flash('error!', category="error")
     return jsonify({})
 
-# this function was used to delete order items before I added this "delete by quantity" option. This is now obsolete.
-@views.route('/delete-order-item', methods=['POST', 'GET'])
-def delete_order_item():
-    item = json.loads(request.data)
-    itemId = item['itemId']
-    item = Menu_order.query.get(itemId)
-    new_order = db.session.query(Order).order_by(Order.id.desc()).first()
-    new_order.total = new_order.total - float(item.price)
-    if item:
-        db.session.delete(item)
-        db.session.commit()
-        flash('ITEM DELETED!', category="success")
-    else:
-        flash('error!', category="error")
-    return jsonify({})
-
-
-# this function was used before the "delete by quantity" option was made to refresh the page
-@views.route('/refresh-order', methods=['GET', 'POST'])
-def refresh_order():
-    # if post(user tries to submit order) after deleting an item then you can submit
-    if request.method == "POST":
-        new_order = db.session.query(Order).order_by(Order.id.desc()).first()
-        # make sure user doesn't submit an empty order
-        if new_order.total == 0:
-            flash('Empty order.', category="error")
-            return redirect(url_for('views.order'))
-        new_order.name = current_user.first_name
-        new_order.comment = request.form.get('comment')
-        new_order.is_active = "Active"
-        flash('Order Submitted!!!', category="success")
-        #db.session.add(new_order)
-        db.session.commit()
-        active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
-        return render_template("user_home.html", active_orders=active_orders, user=current_user)
-    new_order = db.session.query(Order).order_by(Order.id.desc()).first()
-    user = User.query.filter(User.email == 'headChef@gmail.com').first()
-    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
-    return render_template("order.html", items=items, new_order=new_order, user=current_user)
-
 
 # this function is to edit an item from the menu
 # if GET method then will render edit_menu_item.html. I made so that you go to another page with the info of the item
@@ -461,12 +426,14 @@ def clear_inactive_orders():
 # just fetches the order by id and copies the old order details to a new order, and it can be edited and resubmitted
 @views.route('/corder-again/<int:id>', methods=['GET', 'POST'])
 def order_again(id):
+    # change to request.method == 'GET'
     if request.method != 'POST':
         # there were empty orders being submitted and this was a test. Is now obsolete
         error_orders = Order.query.filter(Order.is_active == None).all()
         # fetch old order to copy info over
         old_order = Order.query.filter(Order.id == id).first()
-        new_order = Order(user_id=current_user.id, taxes=0, total=0)
+        # set the new orders taxes and total to the old orders taxes and total to display in the order html
+        new_order = Order(user_id=current_user.id, taxes=old_order.taxes, total=old_order.total)
         db.session.add(new_order)
         db.session.commit()
 
@@ -482,8 +449,6 @@ def order_again(id):
             item_copy.gluten_free = item.gluten_free[:]
             item_copy.vegan = item.vegan[:]
             item_copy.order_id = new_order.id
-            # calculate order total
-            new_order.total = new_order.total + float(item_copy.price)
             db.session.commit()
 
         # db.session.commit()
@@ -497,6 +462,7 @@ def order_again(id):
         new_order.name = current_user.first_name
         new_order.comment = request.form.get('comment')
         new_order.is_active = "Active"
+        new_order.taxes = new_order.total * 0.08
         flash('Order Submitted!!!', category="success")
         db.session.commit()
         active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()

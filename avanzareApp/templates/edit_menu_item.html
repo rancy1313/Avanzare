@@ -1,6 +1,9 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
-
+<!-- this page is for the chef to edit a specific item from the menu. It pulls the item's info from the db by the item's
+id. It then shows what the previous info was for the item and the old info is overwritten with the new info -->
+<!-- this form is to update info in the edit_menu() -->
+<!-- it displays current item info in the textarea -->
 <form method="POST" enctype="multipart/form-data">
     <h3 align="center">Edit menu information</h3>
     <div>Edit Name: {{item.name}}</div>
@@ -50,6 +53,7 @@
     </select>
     <br />
     <br />
+    <!-- previous picture is displayed too and submitting an img isn't mandatory since every item should already have an img -->
     <div>Item Picture</div>
     <input type="file" name="file" accept="image/*"/>
     <br />

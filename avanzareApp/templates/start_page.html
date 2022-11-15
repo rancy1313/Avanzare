@@ -1,8 +1,11 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
-
+<!-- the start page is just a menu available to all users with or without an account. There a featured section that will
+ display up to 5 random news post from the chef at a time. There is also a filter at the bottom that will show dishes
+ that have Gluten free and vegan accommodations -->
 <h1 align="center">Hello, Welcome to Avanzare!!!</h1>
 <h1 align="center">FEATURED</h1>
+<!-- loop to show the random news post that were randomly selected and passed to this page -->
 <ul class="list-group list-group-flush" id="items">
     {% for news_post in news %}
         {% if news_post.featured == "TRUE" %}
@@ -16,10 +19,15 @@
     {% endfor %}
 </ul>
 <br />
+<!-- creates black line around the menu -->
 <div class="blackLine">
     <br />
+    <!-- a nested for loop that will go through each menu type. The inner for loop will loop through the menu items
+     and display them under the corresponding header based on the item's menu type. Items info displayed is item's name,
+      price, description, dish_accommodation, and picture -->
     <h1 align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" >
+        <!-- print once is used to print each menu type once and resets after each parent loop iteration -->
         {% set print_once = 1 %}
         {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
             {% if print_once == 1 %}
@@ -77,6 +85,7 @@
 </div>
 <br />
 <br />
+<!-- this loop is for a drop-down menu that users can use to see which items are Gluten free -->
 <div class="dropdown" align="center">
     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         GLUTEN FREE
@@ -85,6 +94,7 @@
         <ul class="list-group list-group-flush" >
             {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
+            <!-- it will display all menu types but only display menu items that have Gluten free as an option -->
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
                 {% if print_once == 1 %}
                     <div align="center">{{ menu }}</div>
@@ -114,6 +124,7 @@
     </div>
 </div>
 <br />
+<!-- this loop is for a drop-down menu that users can use to see which items are vegan -->
 <div class="dropdown" align="center">
     <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         VEGAN
@@ -122,6 +133,7 @@
         <ul class="list-group list-group-flush" >
             {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
+            <!-- it will display all menu types but only display menu items that have vegan as an option -->
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
                 {% if print_once == 1 %}
                     <div align="center">{{ menu }}</div>
@@ -152,6 +164,7 @@
 </div>
 <br />
 <br />
+<!-- a not to let customers know that allergies are taken seriously -->
 <p align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
 comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></p>
 {% include "footer.html" %}

@@ -18,6 +18,9 @@ def start_page():
     user = User.query.filter(User.email=='headChef@gmail.com').first()
     # if db is deleted then we have to manually create the first user
     # first user is the headChef
+    # this only occurs if start page is the first page selected so if login page was directed first then this user
+    # doesn't exist until selected. I have it set that start page should be the first page, but sometimes if db is reset
+    # it won't be the first page I think because of the keep user logged in function
     if not user:
         new_user = User(email="headChef@gmail.com", first_name="Rance", password=generate_password_hash("pasta123", method="sha256"))
         db.session.add(new_user)
@@ -45,6 +48,15 @@ def start_page():
 # login to make an order and view past orders
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    # if db reset this user might not exist, so this is here to create user just in case
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
+    if not user:
+        new_user = User(email="headChef@gmail.com", first_name="Rance",
+                        password=generate_password_hash("pasta123", method="sha256"))
+        db.session.add(new_user)
+        db.session.commit()
+        items = Menu.query.filter_by(user_id=new_user.id).order_by(Menu.name).all()
+        return render_template("start_page.html", items=items, user=current_user)
     # this function renders login.html if method == get and logs in user if method == post
     if request.method == 'POST':
         email = request.form.get('email')
@@ -55,7 +67,8 @@ def login():
         # if chef is logging in then they get redirected to add menu item. could be changed to view orders or user home.
         # the chef usually would just make whatever he wants to eat, so he wouldn't really need to make an order
         if email == "headChef@gmail.com" and password == "pasta123":
-            flash('Hello Chef!', category="success")
+            msg = 'Hello Chef ' + user.first_name + "!"
+            flash(msg, category="success")
             login_user(user, remember=True)
             return redirect(url_for('views.add_menu_item'))
 

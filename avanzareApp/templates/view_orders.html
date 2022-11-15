@@ -1,12 +1,20 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
 
+<!-- this page is for the chef to view active orders and mark them inactive when they have been completed. The chef can
+ clear inactive orders by setting there is_active status to "clear." This could be useful for if it is a new day and the
+ chef wants to clear the orders from the day before. This could be automated based on order date and right now there is
+ no way for the chef to view all past orders that were set to clear. This is a feature I want to add later. I think it
+ will have some way to sort through past orders and maybe visualize the data -->
+<!-- counts how many active orders -->
 {% set count = namespace(value=0) %}
 {% for order in active_orders %}
     {% set count.value = count.value + 1 %}
 {% endfor %}
+<!-- loops through all active orders in reverse from newest to oldest -->
 <h1 align="center">Active Orders: {{ count.value }}</h1>
 {% for order in active_orders|reverse %}
+    <!-- creates black line over each order -->
     <div class="blackLine">
         <div class="text">
             {% set lst =  [] %}
@@ -23,7 +31,9 @@
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
-                <!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
+                <!-- make a unique list of item names and iterate through it. Will only display item name once before it is added to
+                     the unique list. Then count counts how many times that item is in orders items variable and displays it next to the
+                      items name -->
                 {% for item in order.items %}
                     {% set count = namespace(value=0) %}
                     {% set print_once = 1 %}
@@ -37,7 +47,7 @@
                             <tr>
                                 <th>{{ item.name }}</th>
                                 <th>{{ count.value }}</th>
-                                {% set tmp = (item.price | int) %}
+                                {% set tmp = (item.price | float) %}
                                 <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
                             </tr>
                             <br />
@@ -68,14 +78,19 @@
             <br />
         </div>
     </div>
+    <br />
 {% endfor %}
+<!-- count inactive orders -->
 {% set count = namespace(value=0) %}
 {% for order in inactive_orders %}
     {% set count.value = count.value + 1 %}
 {% endfor %}
 <h1 align="center">Inactive Orders: {{ count.value }}</h1>
+<!-- button to clear inactive orders -->
 <a class="nav-item nav-link" href="{{ url_for('views.clear_inactive_orders') }}">Clear Inactive Orders</a>
+<!-- loops through all active orders in reverse from newest to oldest -->
 {% for order in inactive_orders|reverse %}
+    <!-- creates black line over each order -->
     <div class="blackLine">
         <div class="text">
             {% set lst =  [] %}
@@ -92,7 +107,9 @@
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
-                <!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
+                <!-- make a unique list of item names and iterate through it. Will only display item name once before it is added to
+                     the unique list. Then count counts how many times that item is in orders items variable and displays it next to the
+                      items name -->
                 {% for item in order.items %}
                     {% set count = namespace(value=0) %}
                     {% set print_once = 1 %}
@@ -106,7 +123,7 @@
                             <tr>
                                 <th>{{ item.name }}</th>
                                 <th>{{ count.value }}</th>
-                                {% set tmp = (item.price | int) %}
+                                {% set tmp = (item.price | float) %}
                                 <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
                             </tr>
                             <br />
@@ -136,6 +153,7 @@
             </br >
         </div>
     </div>
+    <br />
 {% endfor %}
 
 {% endblock %}

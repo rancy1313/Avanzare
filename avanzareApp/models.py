@@ -4,18 +4,6 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
-# this needs to be deleted. no longer in use
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(10000))
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
-    # foreign key is an id that references to another id in another database column
-    # one to many relationships
-    # one user to many notes
-    # python class is capital but sql needs lower case
-    # thats why it is user.id and not User.id
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
 # this class is for the chef to create a menu item
 # just has info about the item created by the chef
 class Menu(db.Model):
@@ -88,7 +76,6 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(150))
     # kind of like a list that stores the user's notes
     # for some reason Note is capital here sql be funky
-    notes = db.relationship('Note')
     items = db.relationship('Menu')
     orders = db.relationship('Order')
 

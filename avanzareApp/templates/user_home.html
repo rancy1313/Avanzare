@@ -1,13 +1,21 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %}
 {% block content %}
-
+<!-- this page is a personalized user home page where users can view all active and past orders. If an order is active
+ then it will not show in past orders. Users can also reorder any order they have previously made and make new edits to
+ it. Users can also view all the news that the chef has made. This could be changed to limit how many news posts can show
+ up ata time to not clutter the page, or it can be changed to have news be a drop-down menu for each type of news. I
+ should change it for there to be a limit or some kind of sort for past orders because if there is a lot of orders it
+ can look messy, so adding to the to do list -->
+<!-- count how many active orders the user has -->
 {% set count = namespace(value=0) %}
 {% for order in active_orders %}
     {% set count.value = count.value + 1 %}
 {% endfor %}
 <h1 align="center">Active Orders for {{ user.first_name }}: {{ count.value }}</h1>
 <br />
+<!-- this loop will display users active orders in reverse from newest to oldest. -->
 {% for order in active_orders|reverse %}
+    <!-- creates a black line around each order -->
     <div class="blackLine">
         <div class="text">
             {% set lst =  [] %}
@@ -22,7 +30,7 @@
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
-                <!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
+                <!-- order are displayed with each item name and details showing once and the total of each item -->
                 {% for item in order.items %}
                     {% set count = namespace(value=0) %}
                     {% set print_once = 1 %}
@@ -36,7 +44,8 @@
                             <tr>
                                 <th>{{ item.name }}</th>
                                 <th>{{ count.value }}</th>
-                                {% set tmp = (item.price | int) %}
+                                <!-- convert string price to float -->
+                                {% set tmp = (item.price | float) %}
                                 <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
                             </tr>
                             <br />
@@ -48,6 +57,9 @@
                     {% endif %}
                 {% endfor %}
             </table>
+            <!-- there was an issue with total and taxes being negative when adding and deleting items too fast -->
+            <!-- this is a temporary fix to a bug that might not exist anymore -->
+            <!-- bug seemed to go away after add_by_quantity feature was added but not sure needs further testing -->
             {% if "${:,.2f}".format(order.taxes) == "$-0.00" %}
                 <b>Taxes: $0.00</b>
             {% else %}
@@ -70,6 +82,7 @@
     <br />
 {% endfor %}
 <br />
+<!-- users can view all news posts under corresponding category -->
 <h1 align="center">News</h1>
 <ul class="list-group list-group-flush" id="items">
     {% set print_once = 1 %}
@@ -92,6 +105,7 @@
     {% endfor %}
 </ul>
 <br />
+<!-- count how many orders are not active -->
 {% set count = namespace(value=0) %}
 {% for order in user.orders %}
     {% if order.is_active != 'Active' %}
@@ -100,7 +114,6 @@
 {% endfor %}
 <h1>Past Orders: {{ count.value }}</h1>
 <!-- show past orders from newest to oldest-->
-
 {% for order in user.orders|reverse %}
     {% if order.is_active != 'Active' %}
         <br />
@@ -112,18 +125,15 @@
                         <th>
                             <h3>{{ order.date }}</h3>
                         </th>
-                        {% if order.is_active == "Active" %}
-                            <th>
-                                <div>Status: {{ order.is_active }}</div>
-                            </th>
-                        {% endif%}
                     </tr>
                     <tr>
                         <th>Item</th>
                         <th>Quantity</th>
                         <th>Price</th>
                     </tr>
-                    <!-- make a unique list and iterate throguh it maybe make it from names or maybe from the objects-->
+                    <!-- make a unique list of item names and iterate through it. Will only display item name once before it is added to
+                     the unique list. Then count counts how many times that item is in orders items variable and displays it next to the
+                      items name -->
                     {% for item in order.items %}
                         {% set count = namespace(value=0) %}
                         {% set print_once = 1 %}
