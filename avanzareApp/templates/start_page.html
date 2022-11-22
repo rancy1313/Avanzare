@@ -60,7 +60,7 @@
                                 {% set tmp = item.name + '.jpg' %}
                                 <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
                             </div>
-                            <di class="text" align="center">
+                            <div class="text" align="center">
                                 {{ item.name }}
                                 {% if item.gluten_free == "GLUTEN FREE" %}
                                     <i>{{ "(GF)" }}</i>
@@ -73,7 +73,7 @@
                                 {{ tmp }}
                                 <br />
                                 {{ item.description }}
-                            </di>
+                            </div>
                         </div>
                     </li>
                 {% endif %}
