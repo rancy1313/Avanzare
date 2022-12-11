@@ -4,13 +4,14 @@
  display up to 5 random news post from the chef at a time. There is also a filter at the bottom that will show dishes
  that have Gluten free and vegan accommodations -->
 <h1 align="center">Hello, Welcome to Avanzare!!!</h1>
-<h1 align="center">FEATURED</h1>
+<div class="blackLine">
+<h1 class="h1Color" align="center">FEATURED</h1>
 <!-- loop to show the random news post that were randomly selected and passed to this page -->
 <ul class="list-group list-group-flush" id="items">
     {% for news_post in news %}
         {% if news_post.featured == "TRUE" %}
-            <li class="list-group-item">
-                {{ news_post.title }}
+            <li class="list-group-item" align="center">
+                <b>{{ news_post.title }}</b>
                 <br />
                 {{ news_post.text }}
                 <br />
@@ -18,6 +19,7 @@
         {% endif %}
     {% endfor %}
 </ul>
+</div>
 <br />
 <!-- creates black line around the menu -->
 <div class="blackLine">
@@ -25,29 +27,29 @@
     <!-- a nested for loop that will go through each menu type. The inner for loop will loop through the menu items
      and display them under the corresponding header based on the item's menu type. Items info displayed is item's name,
       price, description, dish_accommodation, and picture -->
-    <h1 align="center"> DINNER MENU </h1>
+    <h1 class="h1Color" align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" >
         <!-- print once is used to print each menu type once and resets after each parent loop iteration -->
         {% set print_once = 1 %}
         {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
             {% if print_once == 1 %}
                 {% if menu == "DESSERT MENU" %}
-                    <h1 align="center"> DESSERTS </h1>
+                    <h1 class="menu_type_color" align="center"> DESSERTS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "AFTER DINNER DRINKS" %}
-                    <h1 align="center"> AFTER DINNER DRINKS </h1>
+                    <h1 class="menu_type_color" align="center"> AFTER DINNER DRINKS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "COCKTAILS" %}
-                    <h1 align="center"> COCKTAILS </h1>
+                    <h1 class="menu_type_color" align="center"> COCKTAILS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "BOTTLE" %}
-                    <h1 align="center"> BEER </h1>
-                    <div align="center">{{ menu }}</div>
+                    <h1 class="menu_type_color" align="center"> BEER </h1>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% set print_once = 0 %}
                 {% else %}
-                    <div align="center">{{ menu }}</div>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% if menu == "PIZZAS" %}
-                        <p align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
+                        <p class="menu_type_color" align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
                     {% endif %}
                     {% set print_once = 0 %}
                 {% endif %}
@@ -61,7 +63,7 @@
                                 <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
                             </div>
                             <div class="text" align="center">
-                                {{ item.name }}
+                                <b>{{ item.name }}
                                 {% if item.gluten_free == "GLUTEN FREE" %}
                                     <i>{{ "(GF)" }}</i>
                                 {% endif %}
@@ -70,9 +72,9 @@
                                 {% endif %}
                                 <br />
                                 {% set tmp = "$" + (item.price | string) %}
-                                {{ tmp }}
+                                {{ tmp }}</b>
                                 <br />
-                                {{ item.description }}
+                                <i>{{ item.description }}</i>
                             </div>
                         </div>
                     </li>
@@ -165,8 +167,9 @@
 <br />
 <br />
 <!-- a not to let customers know that allergies are taken seriously -->
-<p align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
-comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></p>
+<strong align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
+comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></strong>
+<br />
 {% include "footer.html" %}
 
 {% endblock %}

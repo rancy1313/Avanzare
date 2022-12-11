@@ -16,4 +16,10 @@ function deleteNewsPost(news_postId) {
   });
 } ///this will refresh the page after deletes
 
-
+function loadDates(lst_dates) {
+    for (let i = 0; i < lst_dates.length; i++) {
+        var tag = lst_dates[i][0].toString() + '_tag';
+        var tmp_date = new Date(lst_dates[i][1])
+        document.getElementById(tag).innerHTML = tmp_date;
+    }
+}

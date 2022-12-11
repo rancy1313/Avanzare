@@ -8,7 +8,7 @@
  directed to their personal home page-->
 <h1 align="center"> Hello {{ user.first_name }}, here is your order. </h1>
 <!-- this refreshes the order just by refreshing the page -->
-<h1><a id="order" href="/order">Clear Order</a></h1>
+<a class="btn-edit" id="order" href="/order">Clear Order</a>
 {% set lst =  [] %}
 <!-- the table displays the order details by item info as each row -->
 <table style="width:100%">
@@ -45,12 +45,13 @@
                             <input style="width: 25%"
                                    type="delete_quantity"
                                    id="delete_quantity"
-                                   name="delete_quantity"/>
+                                   name="delete_quantity"
+                                   placeholder="Quantity"/>
                             <textarea hidden
                                                 type="itemId2"
                                                 id="itemId2"
                                                 name="itemId2">{{item.id}}</textarea>
-                            <button>Del</button>
+                            <button class="btn-del-order">Delete</button>
                         </form>
                     </th>
                 </tr>
@@ -93,7 +94,7 @@
     <br />
     <!-- a nested for loop to loop through menu types and display the menu type once with a header and then loop through
      the associated items with that type beneath it -->
-    <h1 align="center"> DINNER MENU </h1>
+    <h1 class="h1Color" align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" id="items">
         <!-- these variables are just to display GF/V options in italics -->
         {% set gf = "(GF)" %}
@@ -105,22 +106,22 @@
         {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
             {% if print_once == 1 %}
                 {% if menu == "DESSERT MENU" %}
-                    <h1 align="center"> DESSERTS </h1>
+                    <h1 class="h1Color" align="center"> DESSERTS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "AFTER DINNER DRINKS" %}
-                    <h1 align="center"> AFTER DINNER DRINKS </h1>
+                    <h1 class="h1Color" align="center"> AFTER DINNER DRINKS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "COCKTAILS" %}
-                    <h1 align="center"> COCKTAILS </h1>
+                    <h1 class="h1Color" align="center"> COCKTAILS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "BOTTLE" %}
-                    <h1 align="center"> BEER </h1>
-                    <div align="center">{{ menu }}</div>
+                    <h1 class="h1Color" align="center"> BEER </h1>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% set print_once = 0 %}
                 {% else %}
-                    <div align="center">{{ menu }}</div>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% if menu == "PIZZAS" %}
-                        <p align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
+                        <p class="menu_type_color" align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
                     {% endif %}
                     {% set print_once = 0 %}
                 {% endif %}
@@ -129,11 +130,11 @@
             {% for item in items %}
                 {% if item.menu_type == menu %}
                     <li class="list-group-item">
-                        <table style="width:100%">
+                        <table>
                             <tr>
                                 <th>
                                     {% set tmp = item.name + '.jpg' %}
-                                    <div align="right">
+                                    <div class="image" align="right">
                                         <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
                                     </div>
                                 </th>
@@ -192,9 +193,8 @@
                                                       id="itemId"
                                                       name="itemId">{{item.id}}</textarea>
                                         </div>
-                                        <button>Add to order</button>
+                                        <button class="btn-add">Add to order</button>
                                     </form>
-
                                 </th>
                             </tr>
                         </table>
@@ -210,8 +210,9 @@
 <br />
 <br />
 <!-- a not to let customers know that allergies are taken seriously -->
-<p align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
-comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></p>
+<strong align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
+comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></strong>
+<br />
 <!-- the footer is added at the bottom -->
 {% include "footer.html" %}
 

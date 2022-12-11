@@ -13,7 +13,7 @@ auth = Blueprint('auth', __name__)
 # when db is delleted you have to sign up maybe change login so if no accounts exist the nothing
 
 # star page is where people can see the menu without making an account
-@auth.route('/start_page', methods=['GET'])
+@auth.route('/', methods=['GET'])
 def start_page():
     user = User.query.filter(User.email=='headChef@gmail.com').first()
     # if db is deleted then we have to manually create the first user

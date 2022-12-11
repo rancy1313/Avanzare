@@ -13,16 +13,22 @@
 {% endfor %}
 <h1 align="center">Active Orders for {{ user.first_name }}: {{ count.value }}</h1>
 <br />
+<p id="demoo"></p>
+{% set lst_dates = [] %}
 <!-- this loop will display users active orders in reverse from newest to oldest. -->
 {% for order in active_orders|reverse %}
+    {% set tmp_date = order.date|string %}
+    {% set tmp_date = tmp_date[5:7] + '/' + tmp_date[8:10] + '/' + tmp_date[:4] + tmp_date[10:] %}
+    <p hidden>{{ lst_dates.append([order.id, tmp_date]) }}</p>
+    {% set lst =  [] %}
     <!-- creates a black line around each order -->
-    <div class="blackLine">
+    <div class="blackLine" style="width: 100%;">
         <div class="text">
-            {% set lst =  [] %}
-            <table style="width:100%">
+            <table style="width:95%">
                 <tr>
                     <th>
-                        <h3>{{ order.date }}</h3>
+                        {% set tmp_tag = order.id|string + '_tag' %}
+                        <h3 id="{{ tmp_tag }}"></h3>
                     </th>
                 </tr>
                 <tr>
@@ -84,7 +90,7 @@
 <br />
 <!-- users can view all news posts under corresponding category -->
 <h1 align="center">News</h1>
-<ul class="list-group list-group-flush" id="items">
+<ul class="list-group list-group-flush" id="items" style="width: 100%;">
     {% set print_once = 1 %}
     {% for news_type in ["SALE", "NEW ITEM", "IMPORTANT"] %}
         {% if print_once == 1 %}
@@ -94,7 +100,7 @@
         {% for news_post in news %}
             {% if news_post.news_type == news_type %}
                 <li class="list-group-item">
-                    {{ news_post.title }}
+                    <b>{{ news_post.title }}</b>
                     <br />
                     {{ news_post.text }}
                     <br />
@@ -116,14 +122,18 @@
 <!-- show past orders from newest to oldest-->
 {% for order in user.orders|reverse %}
     {% if order.is_active != 'Active' %}
+        {% set tmp_date = order.date|string %}
+        {% set tmp_date = tmp_date[5:7] + '/' + tmp_date[8:10] + '/' + tmp_date[:4] + tmp_date[10:] %}
+        <p hidden>{{ lst_dates.append([order.id, tmp_date]) }}</p>
         <br />
-        <div class="blackLine">
+        <div class="blackLine" style="width: 100%">
             <div class="text">
                 {% set lst =  [] %}
-                <table style="width:100%">
+                <table style="width:95%">
                     <tr>
                         <th>
-                            <h3>{{ order.date }}</h3>
+                            {% set tmp_tags = order.id|string + '_tag' %}
+                            <h3 id="{{ tmp_tags }}"></h3>
                         </th>
                     </tr>
                     <tr>
@@ -174,6 +184,6 @@
         </div>
     {% endif %}
 {% endfor %}
-
+<body onload="loadDates({{ lst_dates|safe }})"></body>
 {% include "footer.html" %}
 {% endblock %}

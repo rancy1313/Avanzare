@@ -25,31 +25,57 @@ id. It then shows what the previous info was for the item and the old info is ov
 
     <div>Gluten Free Availability: {{ item.gluten_free }}</div>
     <select class="selectpicker" type="gluten_free" id="gluten_free" name="gluten_free">
-        <option>NO</option>
-        <option>GLUTEN FREE</option>
+        <option selected>{{ item.gluten_free }}</option>
+        {% if item.vegan == 'GLUTEN FREE' %}
+            <option>NO</option>
+        {% else %}
+            <option>GLUTEN FREE</option>
+        {% endif %}
     </select>
     <div>Vegan Availability: {{ item.vegan }}</div>
     <select class="selectpicker" type="vegan" id="vegan" name="vegan">
-        <option>NO</option>
-        <option>VEGAN</option>
+        <option selected>{{ item.vegan }}</option>
+        {% if item.vegan == 'VEGAN' %}
+            <option>NO</option>
+        {% else %}
+            <option>VEGAN</option>
+        {% endif %}
     </select>
     <div>Menu Type: {{ item.menu_type }}</div>
+    {% set dinner_menu = ['APPETIZERS', 'SALADS', 'PIZZAS', 'PASTAS', 'ENTREES', 'SIDES'] %}
+    {% set other_manus = ['DESSERT MENU', 'AFTER DINNER DRINKS', 'COCKTAILS', 'BEER'] %}
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
-        <optgroup label="DINNER MENU" >
-            <option>APPETIZERS</option>
-            <option>SALADS</option>
-            <option>PIZZAS</option>
-            <option>PASTAS</option>
-            <option>ENTREES</option>
-            <option>SIDES</option>
-        </optgroup>
-        <option>DESSERT MENU</option>
-        <option>AFTER DINNER DRINKS</option>
-        <option>COCKTAILS</option>
-        <optgroup label="BEER">
-            <option>BOTTLE</option>
-            <option>DRAFT</option>
-        </optgroup>
+        <outgroup label="DINNER MENU">
+            {% for menu_type in dinner_menu %}
+                {% if menu_type == item.menu_type %}
+                    <option selected>{{ menu_type }}</option>
+                {% else %}
+                    <option>{{ menu_type }}</option>
+                {% endif %}
+            {% endfor %}
+        </outgroup>
+        {% for menu_type in other_menus %}
+            {% if menu_type == 'BEER' %}
+                <optgroup label="BEER">
+                    {% if menu_type == item.menu_type %}
+                        <option selected>BOTTLE</option>
+                    {% else %}
+                        <option>BOTTLE</option>
+                    {% endif %}
+                    {% if menu_type == item.menu_type %}
+                        <option selected>DRAFT</option>
+                    {% else %}
+                        <option>DRAFT</option>
+                    {% endif %}
+                </optgroup>
+            {% else %}
+                {% if menu_type == item.menu_type %}
+                    <option selected>{{ menu_type }}</option>
+                {% else %}
+                    <option>{{ menu_type }}</option>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
     </select>
     <br />
     <br />

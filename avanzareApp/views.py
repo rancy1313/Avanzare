@@ -42,7 +42,7 @@ def add_menu_item():
     if request.method == 'POST':
         name = request.form.get('name')
         # make sure no uses any weird characters or tries to do anything funny
-        special_chars = '`~!@#$%^&*()-_=+|[]{};:<>\"\\/'
+        special_chars = '`~@#^*()-_=+|[]{};:<>\"\\/'
         for char in special_chars:
             if char in name:
                 flash('No special chars allowed in item names (except \' ).', category="error")
@@ -334,7 +334,7 @@ def edit_redirect(id):
         # gets new item info and checks if any special chars are in it
         # if no new info is brought then it overwrites with the same info as before
         name = request.form.get('name')
-        special_chars = '`~!@#$%^&*()-_=+|[]{};:<>,.\"\\/'
+        special_chars = '`~!@#$%^*()-_=+|[]{};:<>\"\\/'
         for char in special_chars:
             if char in name:
                 flash('No special chars allowed in item names (except \' ).', category="error")

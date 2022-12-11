@@ -7,7 +7,7 @@
 <form method="POST" enctype="multipart/form-data">
     <h1 align="center">Add an item to the menu</h1>
     <div class="form-group">
-        <label for="name" >Dish Name</label>
+        <label for="name"><b>Dish Name</b></label>
         <input
                 type="name"
                 class="form-control"
@@ -17,9 +17,9 @@
         />
     </div>
     <div class="form-group">
-        <label for="price">Price</label>
+        <label for="price"><b>Price</b></label>
         <br />
-        $
+        <b>$</b>
         <input
                 type="price"
                 class="currencyinput"
@@ -29,7 +29,7 @@
         />
     </div>
     <div class="form-group">
-        <label for="description">Description</label>
+        <label for="description"><b>Description</b></label>
         <input
                 type="description"
                 class="form-control"
@@ -38,17 +38,17 @@
                 placeholder="ENTER DISH DESCRIPTION"
         />
     </div>
-    <div>Gluten Free Availability</div>
+    <label for="gluten_free"><b>Gluten Free Availability</b></label>
     <select class="selectpicker" type="gluten_free" id="gluten_free" name="gluten_free">
         <option>NO</option>
         <option>GLUTEN FREE</option>
     </select>
-    <div>Vegan Availability</div>
+    <label for="vegan"><b>Vegan Availability</b></label>
     <select class="selectpicker" type="vegan" id="vegan" name="vegan">
         <option>NO</option>
         <option>VEGAN</option>
     </select>
-    <div>Menu Type</div>
+    <label for="menu_type"><b>Menu Type</b></label>
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
         <optgroup label="DINNER MENU" >
             <option>APPETIZERS</option>
@@ -67,7 +67,7 @@
         </optgroup>
     </select>
     <br />
-    <div>Item Picture</div>
+    <div><b>Item Picture: </b></div>
     <input type="file" name="file" accept="image/*"/>
     <br />
     <br />
@@ -80,26 +80,29 @@
     <!-- Since DINNER MENU is the first option I included out of the for loop-->
     <!-- This is one for loop that will create the menu instead of making a for loop for each menu type-->
     <!-- It loops through the menu types and only shows a header for each type once and displays menu item if menu type matches-->
-    <h1 align="center"> DINNER MENU </h1>
+    <h1 class="h1Color" align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" id="items">
         {% set print_once = 1 %}
         {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
             {% if print_once == 1 %}
                 {% if menu == "DESSERT MENU" %}
-                    <h1 align="center"> DESSERTS </h1>
+                    <h1 class="h1Color" align="center"> DESSERTS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "AFTER DINNER DRINKS" %}
-                    <h1 align="center"> AFTER DINNER DRINKS </h1>
+                    <h1 class="h1Color" align="center"> AFTER DINNER DRINKS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "COCKTAILS" %}
-                    <h1 align="center"> COCKTAILS </h1>
+                    <h1 class="h1Color" align="center"> COCKTAILS </h1>
                     {% set print_once = 0 %}
                 {% elif menu == "BOTTLE" %}
-                    <h1 align="center"> BEER </h1>
-                    <div align="center">{{ menu }}</div>
+                    <h1 class="h1Color" align="center"> BEER </h1>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% set print_once = 0 %}
                 {% else %}
-                    <div align="center">{{ menu }}</div>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
+                    {% if menu == "PIZZAS" %}
+                        <p class="menu_type_color" align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
+                    {% endif %}
                     {% set print_once = 0 %}
                 {% endif %}
             {% endif %}
@@ -113,7 +116,7 @@
                                 <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
                             </div>
                             <div class="text">
-                                {{ item.name }}
+                                <b>{{ item.name }}
                                 {% if item.gluten_free == "GLUTEN FREE" %}
                                     <i>{{ "(GF)" }}</i>
                                 {% endif %}
@@ -122,14 +125,17 @@
                                 {% endif %}
                                 <!--item.price is a float so needs to be converted to string to display $ format-->
                                 {% set tmp = "$" + (item.price | string) %}
-                                {{ tmp }}
+                                {{ tmp }}</b>
                                 <br />
-                                {{ item.description }}
+                                <i>{{ item.description }}</i>
                                 <!-- shows a button to edit and delete menu item by passing id to corresponding function -->
-                                <a class="nav-item nav-link" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                                <button type="button" onClick="deleteMenuItem({{ item.id }})">
-                                    <span aria-hidden="true">&times; Delete Entry</span>
-                                </button>
+                                <div style="padding-top: 20px;">
+                                    <a class="nav-item nav-link btn-edit" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
+                                    <p style="float: left; padding: 15px;"></p>
+                                    <button class="btn-del" type="button" onClick="deleteMenuItem({{ item.id }})">
+                                        <span aria-hidden="true">&times; Delete Entry</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </li>
