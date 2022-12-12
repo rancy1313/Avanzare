@@ -99,7 +99,7 @@
             <!-- it will display all menu types but only display menu items that have Gluten free as an option -->
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
                 {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
+                    <div class="h1Color" align="center">{{ menu }}</div>
                     {% set print_once = 0 %}
                 {% endif %}
                 {% for item in items %}
@@ -138,7 +138,7 @@
             <!-- it will display all menu types but only display menu items that have vegan as an option -->
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
                 {% if print_once == 1 %}
-                    <div align="center">{{ menu }}</div>
+                    <div class="h1Color" align="center">{{ menu }}</div>
                     {% set print_once = 0 %}
                 {% endif %}
                 {% for item in items %}
