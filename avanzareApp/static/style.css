@@ -9,6 +9,7 @@
 }
 .blackLine {
     border:1px solid black;
+    border-color: #800000;
 }
 .container2 {
     display: flex;
@@ -25,6 +26,8 @@ nav{
 }
 .image {
     border: solid;
+    border-width: 2px;
+    border-color: #800000;
 }
 
 .list-group-item {
