@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}TESTING{% endblock %}
+{% block content %}
+<h1>TESTING</h1>
+<h1 id="demoo">hi</h1>
+<!--<form action="{{ url_for('views.testing_add_to_menu') }}" method="POST">-->
+<form action="/test-add-to-menu" method="POST">
+    <label for="name">Name:</label>
+    <input type="text"
+           class="form-control"
+           id="name"
+           name="name"
+    >
+    <label for="price">Price:</label>
+    <input type="text"
+           class="form-control"
+           id="price"
+           name="price"
+    >
+    <label for="description">Description</label>
+    <input type="text"
+           class="form-control"
+           id="description"
+           name="description"
+    >
+    <button type="submit">Submit</button>
+</form>
+
+{% for item in user.items|reverse %}
+{% set tmp_div = 'edit_div_' + item.id|string %}
+{% set tmp_button = 'edit_' + item.id|string %}
+{% set tmp_hidden = 'hidden_' + item.id|string %}
+<div id="{{ tmp_div }}">
+    <pre>
+        {{ item.name }} {{ item.id }}
+        {{ item.price }}
+        {{ item.description }}
+        {{ item.gluten_free }}
+        {{ item.vegan }}
+        {{ item.menu_type }}
+        <form action="{{ url_for('views.test_delete', item_id=item.id) }}" method="POST">
+            <button type="submit">Delete</button>
+        </form>
+        <!--<button id="{{ tmp_button }}"
+                onClick="showPage({{ item.id }}, ['{{ item.name }}', '{{ item.price }}', '{{ item.description }}',
+                 '{{ item.gluten_free }}', '{{ item.vegan }}', '{{ item.menu_type }}'])">Edit</button>-->
+        <button id="edit_{{ item.id }}"
+                class="show"
+                onClick="blueprint({{ item.id }})">Edit</button>
+    </pre>
+    <div id="hidden_{{ item.id }}" class="only_one" hidden><div class="edit_page">{% include 'edit_page_blueprint.html' %}</div></div>
+</div>
+<br>
+{% endfor %}
+
+{% endblock %}

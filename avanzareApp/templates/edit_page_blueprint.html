@@ -1,30 +1,39 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %}
-{% block content %}
-<!-- this page is for the chef to edit a specific item from the menu. It pulls the item's info from the db by the item's
-id. It then shows what the previous info was for the item and the old info is overwritten with the new info -->
-<!-- this form is to update info in the edit_menu() -->
-<!-- it displays current item info in the textarea -->
-<form method="POST" enctype="multipart/form-data">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<button id="edit_button_{{ item.id }}" onClick="closeBlueprint({{ item.id }})" class="btn-del" style="float: right;">Close Edit</button>
+<form action="/edit-menu-item/{{ item.id }}" method="POST" enctype="multipart/form-data">
     <h3 align="center">Edit menu information</h3>
-    <div>Edit Name: {{item.name}}</div>
-    <textarea   type="name"
-                class="form-control"
-                id="name"
-                name="name">{{item.name}}</textarea>
-    <div>Edit Price: {{item.price}}</div>
-    <textarea   type="price"
-                class="form-control"
-                id="price"
-                name="price">{{item.price}}</textarea>
-    <br />
-    <div>Edit Description: {{item.description}}</div>
+    <label for="name"><b>Name: <i>{{item.name}}</i></b></label>
+    <input type="name"
+           class="form-control"
+           id="name"
+           name="name"
+           value="{{item.name}}"
+           pattern="[a-zaA-Z\s',\.]{2,30}"
+           required>
+    <label for="price"><b>Price: <i>{{item.price}}</i></b></label>
+    <input type="price"
+           class="form-control"
+           id="price"
+           name="price"
+           value="{{item.price}}"
+           pattern="\d{1,3}(,\d{3})*(\.\d+)"
+           required>
+    <label for="description"><b>Description: <i>{{item.description}}</i></b></label>
     <textarea   type="description"
                 class="form-control"
                 id="description"
-                name="description">{{item.description}}</textarea>
+                name="description"
+                pattern="[a-zaA-Z\s',\.]{2,800}"
+                required>{{item.description}}</textarea>
 
-    <label for="gluten_free">Gluten Free Availability: {{ item.gluten_free }}</label>
-    <select class="selectpicker" type="gluten_free" id="gluten_free" name="gluten_free">
+    <label for="gluten_free"><b>Gluten Free Availability: <i>{{ item.gluten_free }}</i></b></label>
+    <select class="selectpicker selectLength" type="gluten_free" id="gluten_free" name="gluten_free">
         <option selected>{{ item.gluten_free }}</option>
         {% if item.gluten_free == 'GLUTEN FREE' %}
             <option>NO</option>
@@ -33,8 +42,8 @@ id. It then shows what the previous info was for the item and the old info is ov
         {% endif %}
     </select>
     <br />
-    <label for="vegan">Vegan Availability: {{ item.vegan }}</label>
-    <select class="selectpicker" id="vegan" name="vegan">
+    <label for="vegan"><b>Vegan Availability: <i>{{ item.vegan }}</i></b></label>
+    <select class="selectpicker selectLength" id="vegan" name="vegan">
         <option selected>{{ item.vegan }}</option>
         {% if item.vegan == 'VEGAN' %}
             <option>NO</option>
@@ -43,10 +52,10 @@ id. It then shows what the previous info was for the item and the old info is ov
         {% endif %}
     </select>
     <br />
-    <label for="menu_type">Menu Type: {{ item.menu_type }}</label>
+    <label for="menu_type"><b>Menu Type: <i>{{ item.menu_type }}</i></b></label>
     {% set dinner_menu = ['APPETIZERS', 'SALADS', 'PIZZAS', 'PASTAS', 'ENTREES', 'SIDES'] %}
     {% set other_menus = ['DESSERT MENU', 'AFTER DINNER DRINKS', 'COCKTAILS', 'BEER'] %}
-    <select class="selectpicker" id="menu_type" name="menu_type">
+    <select class="selectpicker selectLength" id="menu_type" name="menu_type">
         <optgroup label="DINNER MENU">
             {% for menu_type in dinner_menu %}
                 {% if menu_type == item.menu_type %}
@@ -80,19 +89,15 @@ id. It then shows what the previous info was for the item and the old info is ov
         {% endfor %}
     </select>
     <br />
-    <br />
-    <!-- previous picture is displayed too and submitting an img isn't mandatory since every item should already have an img -->
-    <label for="file">Item Picture:</label>
+    <label for="file"><b>Item Picture:</b></label>
     <input type="file" id="file" name="file" accept="image/*"/>
     <br />
     {% set tmp = item.name + '.jpg' %}
-    <div>
-        Previous Image:
-        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
-    </div>
+    <label for="previous_image"><b>Previous Image:</b></label>
+    <img id="previous_image" class="img-responsive image" src="{{ url_for('views.send_image', filename=item.item_image) }}" width="200" height="200">
     <br />
-    <button type="submit" class="btn btn-primary">Edit Item</button>
+    <button type="submit" class="btn-add">Edit Item</button>
 </form>
 <br />
-
-{% endblock %}
+</body>
+</html>

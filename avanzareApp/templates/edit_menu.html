@@ -113,7 +113,7 @@
                         <div class="container2" align="center">
                             <div class="image">
                                 {% set tmp = item.name + '.jpg' %}
-                                <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                                <img class="img-responsive" src="{{ url_for('views.send_image', filename=item.item_image) }}" width="200" height="200">
                             </div>
                             <div class="text">
                                 <b>{{ item.name }}
@@ -130,14 +130,16 @@
                                 <i>{{ item.description }}</i>
                                 <!-- shows a button to edit and delete menu item by passing id to corresponding function -->
                                 <div style="padding-top: 20px;">
-                                    <a class="nav-item nav-link btn-edit" href="{{ url_for('views.edit_redirect', id=item.id) }}">Edit Entry</a>
-                                    <p style="float: left; padding: 15px;"></p>
                                     <button class="btn-del" type="button" onClick="deleteMenuItem({{ item.id }})">
                                         <span aria-hidden="true">&times; Delete Entry</span>
                                     </button>
+                                    <button id="edit_{{ item.id }}"
+                                        class="show btn-edit"
+                                        onClick="blueprint({{ item.id }})">Edit</button>
                                 </div>
                             </div>
                         </div>
+                        <div id="hidden_{{ item.id }}" class="only_one" hidden><div class="edit_page">{% include 'edit_page_blueprint.html' %}</div></div>
                     </li>
                 {% endif %}
             {% endfor %}

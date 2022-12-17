@@ -10,12 +10,12 @@ auth = Blueprint('auth', __name__)
 # POST is updating or creating something
 # sending info to the server is a POST request
 # UPDATE, DELETE, ETC
-# when db is delleted you have to sign up maybe change login so if no accounts exist the nothing
+# when db is deleted you have to sign up maybe change login so if no accounts exist the nothing
 
 # star page is where people can see the menu without making an account
 @auth.route('/', methods=['GET'])
 def start_page():
-    user = User.query.filter(User.email=='headChef@gmail.com').first()
+    user = User.query.filter(User.email == 'headChef@gmail.com').first()
     # if db is deleted then we have to manually create the first user
     # first user is the headChef
     # this only occurs if start page is the first page selected so if login page was directed first then this user

@@ -12,11 +12,13 @@
     border-color: #800000;
 }
 .container2 {
+    margin: 20px;
     display: flex;
     align-items: center;
     justify-content: center
     background-color: #CE9854;
 }
+
 .text {
     font-size: 20px;
     padding-left: 40px;
@@ -47,7 +49,10 @@ nav{
     font-size: 16px;
     border: none;
     cursor: pointer;
-    float: left;
+    margin: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: red;
 }
 /* HOVER EFFECTS STOPPED WORKING :( */
 /* hover effect for buttons #CD5C5C */
@@ -63,8 +68,11 @@ nav{
     border: none;
     cursor: pointer;
     width: 120px;
-    float: left;
     align: center;
+    margin: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: #9d9dfa;;
 }
 /* hover effect for buttons */
 .btn-edit:hover, .btn-edit:focus {
@@ -78,6 +86,9 @@ nav{
     font-size: 16px;
     border: none;
     cursor: pointer;
+    border: solid;
+    border-width: 1px;
+    border-color: #79d1a3;
 }
 /* hover effect for buttons */
 .btn-add:hover, .btn-add:focus {
@@ -91,8 +102,30 @@ nav{
     font-size: 14px;
     border: none;
     cursor: pointer;
+    margin: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: #CD5C5C;
 }
-/**/
+/* hover effects */
 .btn-del-order:hover, .btn-del-order:active {
     background-color: #CD5C5C;
+}
+
+.edit_page {
+    height: auto;
+    width: 100%;
+    background-color: #a0ddff;
+    border: solid;
+    border-width: 1px;
+    border-radius: 11px;
+    padding: 35px;
+}
+
+form > * {
+    margin: 10px;
+}
+
+input:invalid {
+    background-color: lightpink;
 }

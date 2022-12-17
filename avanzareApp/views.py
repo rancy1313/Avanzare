@@ -7,23 +7,8 @@ import os
 
 # for image uploading
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-
+target = os.path.join(APP_ROOT, 'images/')
 views = Blueprint('views', __name__)
-# handling floating point errors
-
-# add orders variable to User class
-# create a class ofr orders and link by id
-# make a list of items to add on orders
-# save each list as a separate order
-# JUST IDEA might need two new tables one for individual orders and
-# one that takes lists of orders to check order history
-# maybe orders can also add a comment to each dish
-# maybe in user sign up you can add alergies also have nav that can edit it
-# gonna have to change base.html or create base html for headCHef account
-# add html the pizza descriptio. Look for more menu data to be added
-# pictures of food??
-# {% if user.email == 'headChef@gmail.com" %}
-# something like <a class="nav-item nav-link" id="home" href="/add_menu">add_menu</a>
 
 # this function just returns the a specific image based on the name from the directory
 @views.route('/upload/<filename>')
@@ -120,6 +105,13 @@ def add_menu_item():
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     return render_template("edit_menu.html", items=items, user=current_user)
+
+
+
+
+
+
+
 
 
 @views.route('/user_home', methods=['GET', 'POST'])
@@ -322,73 +314,6 @@ def delete_item():
         flash('error!', category="error")
     return jsonify({})
 
-
-# this function is to edit an item from the menu
-# if GET method then will render edit_menu_item.html. I made so that you go to another page with the info of the item
-# you want to edit. Then you can change whatever and it updates the info and commits
-@views.route('/edit_redirect/<int:id>', methods=['GET', 'POST'])
-def edit_redirect(id):
-    # finds item by the id passed from the edit button
-    item = Menu.query.filter(Menu.id == id).first()
-    if request.method == 'POST':
-        # gets new item info and checks if any special chars are in it
-        # if no new info is brought then it overwrites with the same info as before
-        name = request.form.get('name')
-        special_chars = '`~!@#$%^*()-_=+|[]{};:<>\"\\/'
-        for char in special_chars:
-            if char in name:
-                flash('No special chars allowed in item names (except \' ).', category="error")
-                return redirect(url_for('views.edit_redirect', id=id))
-        price = request.form.get('price')
-        price = "{:,.2f}".format(float(price))
-        description = request.form.get('description')
-        for char in special_chars:
-            if char in description:
-                flash('No special chars allowed in description (except \' ).', category="error")
-                return redirect(url_for('views.edit_redirect', id=id))
-        menu_type = request.form.get('menu_type')
-        gluten_free = request.form.get('gluten_free')
-        vegan = request.form.get('vegan')
-        # two cases for images.
-        # 1. Old img is kept and needs to make sure img name matches item name because images are displayed by matching names
-        # 2. new img is selected for item and need to delete old img to replace it
-        # target is root
-        target = os.path.join(APP_ROOT, 'images/')
-        if not os.path.isdir(target):
-            os.mkdir(target)
-
-        for file in request.files.getlist('file'):
-            # if filaname empty then no new image was submitted. If it is not empty then new image was submitted
-            if file.filename == "":
-                # tmp is the name of the img someone changes the name of the item and does not change the img
-                # the imgs are not connected by a db and are connected by name so if the item name changes then the img name needs to change
-                # tmp = name is the new name/ if the name is kept the same then nothing gets overwritten
-                # tmp2 is the old item name
-                tmp = target + name + '.jpg'
-                tmp2 = target + item.name + '.jpg'
-                os.renames(tmp2, tmp)
-            else:
-                # if a new image is selected then the old one should be deleted, so it doesn't take up space
-                filename = item.name + '.jpg'
-                target = os.path.join(APP_ROOT, 'images/')
-                os.unlink(os.path.join(target, filename))
-                # save new img after
-                filename = name + '.jpg'
-                destination = "/".join([target, filename])
-                file.save(destination)
-        # the item info is always overwritten but if the nothing was changed then it overwrites with the old info
-        item.name = name
-        item.price = price
-        item.description = description
-        item.menu_type = menu_type
-        item.gluten_free = gluten_free
-        item.vegan = vegan
-        # flash success msg, commit, and redirect to edit menu with updated info
-        flash('Item has been edited!!!', category="success")
-        db.session.commit()
-        return redirect(url_for('views.add_menu_item'))
-    return render_template('edit_menu_item.html', item=item, user=current_user)
-
 # renders views order page for chef to see active orders. Active order are orders that are still being prepared
 # inactive orders are orders that were completed. In this page inactive orders can be cleared. The idea behind that
 # feature is that if it is a new day then you might not want to see inactive orders from the day before
@@ -499,3 +424,55 @@ def delete_news_post():
         flash('error!', category="error")
     return jsonify({})
 
+@views.route('/testing', methods=['POST', 'GET'])
+def testing():
+    print('testing')
+    return render_template('testing.html', user=current_user)
+
+@views.route('/test-add-to-menu', methods=['POST'])
+def testing_add_to_menu():
+    print('add_to_menu')
+    name = request.form.get('name')
+    price = request.form.get('price')
+    description = request.form.get('description')
+    item = Menu(name=name, price=price, description=description, menu_type='APPETIZERS', gluten_free='NO',
+                         vegan='NO', user_id=current_user.id)
+    db.session.add(item)
+    db.session.commit()
+    return redirect(url_for('views.testing'))
+
+
+@views.route('/test-delete/<int:item_id>', methods=['POST'])
+def test_delete(item_id):
+    print('delete')
+    item = Menu.query.filter_by(id=item_id).first()
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for('views.testing'))
+
+# this function is to edit any item from the menu
+# it gets an id from the button when the form is submitted it has an action for this decorator. Then whatever values
+# were inside the input fields are pulled and overwritten.
+@views.route('/edit-menu-item/<int:item_id>', methods=['POST'])
+def edit_menu_item(item_id):
+    # find the item by its id
+    item = Menu.query.filter_by(id=item_id).first()
+    # get all the user input values
+    item.name = request.form.get('name')
+    item.price = request.form.get('price')
+    item.description = request.form.get('description')
+    item.gluten_free = request.form.get('gluten_free')
+    item.vegan = request.form.get('vegan')
+    item.menu_type = request.form.get('menu_type')
+    tmp_file = request.files.get('file')
+    # if filename empty then do nothing because user doesn't want to change the item image
+    if tmp_file.filename != '':
+        # else change the image
+        filename = item.name + '.jpg'
+        destination = "/".join([target, filename])
+        tmp_file.save(destination)
+        # save the image name to item.item_image to call it later when it is needed to be displayed
+        item.item_image = filename
+    db.session.commit()
+    # return to edit menu html
+    return redirect(url_for('views.add_menu_item'))

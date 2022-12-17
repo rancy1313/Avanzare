@@ -4,6 +4,7 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+
 # this class is for the chef to create a menu item
 # just has info about the item created by the chef
 class Menu(db.Model):
@@ -15,6 +16,7 @@ class Menu(db.Model):
     gluten_free = db.Column(db.String(150))
     vegan = db.Column(db.String(150))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+    item_image = db.Column(db.String(30))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 # this class is for the user to add an item to an order
