@@ -4,7 +4,7 @@
  the page will refresh and a warning is flashed. Also, item names are supposed to be unique. The chef can delete and
  edit any item. The page refreshes after any change to see the updated menu -->
 <!-- form to get info for add_menu_item() -->
-<form action="/test-add-to-menu" method="POST" enctype="multipart/form-data">
+<form action="/add-to-menu" method="POST" enctype="multipart/form-data">
     <h1 align="center">Add an item to the menu</h1>
     <div class="form-group">
         <label for="name"><b>Dish Name</b></label>
@@ -14,7 +14,7 @@
                 id="name"
                 name="name"
                 placeholder="ENTER DISH NAME"
-                pattern="[a-zaA-Z\s',\.]{2,30}"
+                pattern="[a-zaA-Z0-9\s',\.]{2,30}"
         />
     </div>
     <div class="form-group">
@@ -27,7 +27,6 @@
                 id="price"
                 name="price"
                 placeholder="ENTER DISH PRICE"
-                pattern=""
         />
     </div>
     <div class="form-group">
@@ -38,7 +37,7 @@
                 id="description"
                 name="description"
                 placeholder="ENTER DISH DESCRIPTION"
-                pattern="[a-zaA-Z\s',\.]{2,800}"
+                pattern="[a-zaA-Z0-9\s',\.]{2,800}"
         />
     </div>
     <label for="gluten_free"><b>Gluten Free Availability</b></label>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, send_from_directory
+from flask import Blueprint, render_template, request, flash, abort, jsonify, redirect, url_for, send_from_directory
 from flask_login import login_required, current_user
 from .models import Menu, User, Order, Menu_order, News
 from . import db
@@ -22,7 +22,11 @@ def send_image(filename):
 # get to edit menu page
 @views.route('/edit-menu', methods=['GET'])
 def edit_menu():
+    # fetch all menu items
     items = Menu.query.all()
+    # if user is not logged in and trying to access the page
+    if current_user.is_anonymous:
+        abort(404, description="Resource not found")
     # make sure page only loads for head chef
     if current_user.email == 'headChef@gmail.com':
         return render_template("edit_menu.html", items=items, user=current_user)
@@ -32,8 +36,8 @@ def edit_menu():
 
 # this is the function for the head chef to add any item they want to the menu. There are some requirements like menu
 # items cannot have the same name, price must be digits/float, and limited chars for name/description.
-@views.route('/test-add-to-menu', methods=['POST'])
-def testing_add_to_menu():
+@views.route('/add-to-menu', methods=['POST'])
+def add_to_menu():
     # get input values from the chef
     name = request.form.get('name')
     price = request.form.get('price')
@@ -74,7 +78,7 @@ def testing_add_to_menu():
         if char in name + description:
             message = 'Some special chars are not permitted such as: ' + char
             flash(message, category="error")
-            return redirect(url_for('views.add_menu_item'))
+            return redirect(url_for('views.edit_menu'))
     # if all is good then create the item and refresh page
     item = Menu(name=name, price=price, description=description, menu_type=menu_type, gluten_free=gluten_free,
                 vegan=vegan, item_image=filename, user_id=current_user.id)
@@ -86,15 +90,6 @@ def testing_add_to_menu():
 @views.route('/user_home', methods=['GET', 'POST'])
 @login_required
 def user_home():
-    # this function is to load the users home page that shows their active orders and past orders
-    # active orders are orders that are still in the progress of being made
-    # sometimes when the page is refreshed while on the order page
-    # or everytime the order page is clicked it will create a new order
-    # ,so I will delete those orders here
-    # issue was solved a while ago, so this technically shouldn't be here. Might delete this soon.
-    error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == None).delete()
-    error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.total == 0).delete()
-    db.session.commit()
     active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
     # user can view all restaurant's news in user home. This could be changed to show limited random news like in
     # the featured section of the start page, but I'm assuming that there wouldn't be that many news
@@ -103,7 +98,19 @@ def user_home():
     db.session.commit()
     return render_template("user_home.html", news=news, active_orders=active_orders, user=current_user)
 
+@views.route('/test-order', methods=['GET', 'POST'])
+@login_required
+def test_order():
+    items = Menu.query.all()
+    # delete any empty orders. Everytime we go to the order page, we create a new order object, so we should delete
+    # the uncompleted order objects to not have a bunch of empty orders in the db.
+    error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.total == 0).delete()
+    new_order = new_order = Order(user_id=current_user.id, taxes=0, total=0)
+    db.session.add(new_order)
+    db.session.commit()
+    return render_template("order2.html", items=items, new_order=new_order, user=current_user)
 
+# delete_this this function
 @views.route('/order', methods=['GET', 'POST'])
 @login_required
 def order():
@@ -381,11 +388,6 @@ def delete_news_post():
     return jsonify({})
 
 
-@views.route('/testing', methods=['POST', 'GET'])
-def testing():
-    print('testing')
-    return render_template('testing.html', user=current_user)
-
 
 # this is function is to delete an item from the menu. It just finds the item by id and then deletes it. It also deletes
 # the image associated with that item from the images directory
@@ -397,7 +399,7 @@ def delete_menu_item(item_id):
     db.session.delete(item)
     db.session.commit()
     flash('Item deleted!', category="success")
-    return redirect(url_for('views.add_menu_item'))
+    return redirect(url_for('views.edit_menu'))
 
 
 # this function is to edit any item from the menu
@@ -432,4 +434,4 @@ def edit_menu_item(item_id):
     db.session.commit()
     # return to edit menu html
     flash('Item edited!', category="success")
-    return redirect(url_for('views.add_menu_item'))
+    return redirect(url_for('views.edit_menu'))

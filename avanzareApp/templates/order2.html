@@ -1,0 +1,239 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% block content %}
+<!-- this page is for a user to make an order. It displays a menu where the user can choose by quantity how many of each
+ item the want to add to their order. If the item is available for extra dish accommodations then it will display. The
+ user also has an option to add a comment to each order specifying any special request or allergy information. The user
+ can delete items from the order by quantity. The total and taxes(8%) are show under the table. The table only shows an
+ item once and the quantity of it. It also displays the cost total of each item. After a user submits an order, they are
+ directed to their personal home page-->
+<h1 align="center"> Hello {{ user.first_name }}, here is your order. {{ new_order.id }}</h1>
+<h1 id="pop">test</h1>
+<h1 id="dog">found</h1>
+<h1>order</h1>
+<table id="actual_order" style="width:100%">
+    <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Remove Item</th>
+    </tr>
+</table>
+<!-- this refreshes the order just by refreshing the page -->
+<a class="btn-edit" id="order" href="/order">Clear Order</a>
+{% set lst =  [] %}
+<!-- the table displays the order details by item info as each row -->
+<table style="width:100%">
+    <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Remove Item</th>
+    </tr>
+    <!-- make a unique list of item names and iterate through it. Will only display item name once before it is added to
+     the unique list. Then count counts how many times that item is in orders items variable and displays it next to the
+      items name -->
+    {% for item in new_order.items %}
+        {% set count = namespace(value=0) %}
+        <!-- set print once to once and reset it at the end of the loop -->
+        {% set print_once = 1 %}
+        {% if item.name not in lst %}
+            {% for item_count in new_order.items %}
+                <!-- count how many of each item there is by item name -->
+                {% if item.name == item_count.name %}
+                    {% set count.value = count.value + 1 %}
+                {% endif %}
+            {% endfor %}
+            {% if print_once == 1 %}
+                <tr>
+                    <!-- print this once for each different item on the order -->
+                    <th>{{ item.name }}</th>
+                    <th>{{ count.value }}</th>
+                    {% set tmp = (item.price | float) %}
+                    <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
+                    <th>
+                        <!-- this form is to pass the item id to know how much quantity of this item should be deleted -->
+                        <form action="/add-to-order/{{ new_order.id }}" method="POST">
+                            <input style="width: 25%"
+                                   type="delete_quantity"
+                                   id="delete_quantity"
+                                   name="delete_quantity"
+                                   placeholder="Quantity"/>
+                            <textarea hidden
+                                                type="itemId2"
+                                                id="itemId2"
+                                                name="itemId2">{{item.id}}</textarea>
+                            <button class="btn-del-order">Delete</button>
+                        </form>
+                    </th>
+                </tr>
+                <br />
+            {% endif %}
+            {% set print_once = 1 %}
+            <!-- append item name so it won't print the item's info again -->
+            <div hidden>
+                {{ lst.append(item.name) }}
+            </div>
+        {% endif %}
+    {% endfor %}
+</table>
+<!-- print taxes and total.  -->
+{% if "${:,.2f}".format(new_order.taxes) == "$-0.00" %}
+    <h3>Taxes: $0.00</h3>
+{% else %}
+    <h3>Taxes: {{ "${:,.2f}".format(new_order.taxes) }}</h3>
+{% endif %}
+<!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
+{% if "${:,.2f}".format(new_order.total + new_order.taxes) == "$-0.00" %}
+   <h3>Total: $0.00</h3>
+{% else %}
+    <h3>Total: {{ "${:,.2f}".format(new_order.total + new_order.taxes) }}</h3>
+{% endif %}
+
+<h1>Taxes</h1>
+<h1>Total</h1>
+<!-- this form is to submit the order and pass the comment and complete_order variables to add_to_order() -->
+<form method="POST">
+    <div>Have any comments or food accommodation requests</div>
+    <textarea name="comment" id="comment" class="form-control"></textarea>
+    <br />
+    <textarea hidden
+              type="complete_order"
+              id="complete_order"
+              name="complete_order">TRUE</textarea>
+    <button type="submit" class="btn btn-primary">Complete Order</button>
+</form>
+<br />
+<!-- create a black line around the order menu -->
+<div class="blackLine">
+    <br />
+    <!-- a nested for loop to loop through menu types and display the menu type once with a header and then loop through
+     the associated items with that type beneath it -->
+    <h1 class="h1Color" align="center"> DINNER MENU </h1>
+    <ul class="list-group list-group-flush" id="items">
+        <!-- these variables are just to display GF/V options in italics -->
+        {% set gf = "(GF)" %}
+        {% set v = "(V)" %}
+        <!-- I found it easier to combine gf and v together as an option if both options were available for a dish -->
+        {% set gfv = "(GF and V)" %}
+        <!-- gets set to 0 after a header is displayed but set to 1 at the end of every parent loop iteration -->
+        {% set print_once = 1 %}
+        {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
+            {% if print_once == 1 %}
+                {% if menu == "DESSERT MENU" %}
+                    <h1 class="h1Color" align="center"> DESSERTS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "AFTER DINNER DRINKS" %}
+                    <h1 class="h1Color" align="center"> AFTER DINNER DRINKS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "COCKTAILS" %}
+                    <h1 class="h1Color" align="center"> COCKTAILS </h1>
+                    {% set print_once = 0 %}
+                {% elif menu == "BOTTLE" %}
+                    <h1 class="h1Color" align="center"> BEER </h1>
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
+                    {% set print_once = 0 %}
+                {% else %}
+                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
+                    {% if menu == "PIZZAS" %}
+                        <p class="menu_type_color" align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
+                    {% endif %}
+                    {% set print_once = 0 %}
+                {% endif %}
+            {% endif %}
+            <!-- displays each menu items details such as image, name, price etc -->
+            {% for item in items %}
+                {% if item.menu_type == menu %}
+                    <li class="list-group-item">
+                        <table>
+                            <tr>
+                                <th>
+                                    {% set tmp = item.name + '.jpg' %}
+                                    <div class="image" align="right">
+                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="text">
+                                        {{ item.name }}
+                                        {% set tmp = "$" + (item.price | string) %}
+                                        {{ tmp }}
+                                        {% if item.gluten_free == "GLUTEN FREE" %}
+                                            <i>{{ gf }}</i>
+                                        {% endif %}
+                                        {% if item.vegan == "VEGAN" %}
+                                            <i>{{ v }}</i>
+                                        {% endif %}
+                                        {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                                            <i>{{ gfv }}</i>
+                                        {% endif %}
+                                        <br />
+                                        {{ item.description }}
+                                        <br />
+                                    </div>
+                                </th>
+                                <th>
+                                    <button onclick="addToOrder(document.getElementById('quantity_{{ item.id }}').value,
+                                                    {{ item.id }}, '{{ item.name }}', {{ item.price }},
+                                                    document.getElementById('dish_accommodation_{{ item.id }}').value)">Plus</button>
+                                    <!-- this form is to pass quantity/dish_accommodation/item_id to add_to_order() -->
+                                    <form action="/add-to-order/{{ new_order.id }}" method="POST">
+                                        <div class="form-group">
+                                            <label for="quantity_{{ item.id }}">Quantity: </label>
+                                            <input  style="width: 30%"
+                                                    type="number" min="1" step="1"
+                                                    class="form-control"
+                                                    id="quantity_{{ item.id }}"
+                                                    name="quantity"
+                                                    placeholder=" Qnty"
+                                            />
+                                            <!-- will only display option to add gf/v option if the dish has it available as an option -->
+                                            {% if (item.gluten_free == "GLUTEN FREE") or (item.vegan == "VEGAN") %}
+                                                <div>Gluten Free/Vegan</div>
+                                                    <select class="selectpicker" type="dish_accommodation" id="dish_accommodation_{{ item.id }}" name="dish_accommodation">
+                                                        <optgroup label="CHOOSE ONE" >
+                                                            <option>REGULAR</option>
+                                                            {% if item.gluten_free == "GLUTEN FREE" %}
+                                                                <option>GLUTEN FREE</option>
+                                                            {% endif %}
+                                                            {% if item.vegan == "VEGAN" %}
+                                                                <option>VEGAN</option>
+                                                            {% endif %}
+                                                            {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                                                                <option>GLUTEN FREE AND VEGAN</option>
+                                                            {% endif %}
+                                                        </optgroup>
+                                                    </select>
+                                            {% else %}
+                                                {% set tmp_id = "dish_accommodation_" + item.id|string %}
+                                                <select id="{{ tmp_id }}" hidden><option>REGULAR</option></select>
+                                            {% endif %}
+                                            <!-- a hidden field just to pass item id to the function -->
+                                            <textarea hidden
+                                                      type="itemId"
+                                                      id="itemId"
+                                                      name="itemId">{{item.id}}</textarea>
+                                        </div>
+                                        <button class="btn-add">Add to order</button>
+                                    </form>
+                                </th>
+                            </tr>
+                        </table>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <!-- reset print once to print the next menu type once -->
+            {% set print_once = 1 %}
+        {% endfor %}
+    </ul>
+    <br />
+</div>
+<br />
+<br />
+<!-- a not to let customers know that allergies are taken seriously -->
+<strong align="center"><i>If there are any allergies or any accommodations needed for your meal, please indicate in the order
+comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs may increase risk of foodborne illness.</i></strong>
+<br />
+<!-- the footer is added at the bottom -->
+{% include "footer.html" %}
+
+{% endblock %}

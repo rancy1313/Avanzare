@@ -70,7 +70,7 @@ def login():
             msg = 'Hello Chef ' + user.first_name + "!"
             flash(msg, category="success")
             login_user(user, remember=True)
-            return redirect(url_for('views.add_menu_item'))
+            return redirect(url_for('views.edit_menu'))
 
         # checks to see if the user exists by checking if the password entered matches the db password
         # it is also hashed in the db
