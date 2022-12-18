@@ -4,7 +4,7 @@
  the page will refresh and a warning is flashed. Also, item names are supposed to be unique. The chef can delete and
  edit any item. The page refreshes after any change to see the updated menu -->
 <!-- form to get info for add_menu_item() -->
-<form method="POST" enctype="multipart/form-data">
+<form action="/test-add-to-menu" method="POST" enctype="multipart/form-data">
     <h1 align="center">Add an item to the menu</h1>
     <div class="form-group">
         <label for="name"><b>Dish Name</b></label>
@@ -14,6 +14,7 @@
                 id="name"
                 name="name"
                 placeholder="ENTER DISH NAME"
+                pattern="[a-zaA-Z\s',\.]{2,30}"
         />
     </div>
     <div class="form-group">
@@ -26,6 +27,7 @@
                 id="price"
                 name="price"
                 placeholder="ENTER DISH PRICE"
+                pattern=""
         />
     </div>
     <div class="form-group">
@@ -36,6 +38,7 @@
                 id="description"
                 name="description"
                 placeholder="ENTER DISH DESCRIPTION"
+                pattern="[a-zaA-Z\s',\.]{2,800}"
         />
     </div>
     <label for="gluten_free"><b>Gluten Free Availability</b></label>
@@ -48,6 +51,7 @@
         <option>NO</option>
         <option>VEGAN</option>
     </select>
+    <br />
     <label for="menu_type"><b>Menu Type</b></label>
     <select class="selectpicker" type="menu_type" id="menu_type" name="menu_type">
         <optgroup label="DINNER MENU" >
@@ -110,10 +114,10 @@
             {% for item in items %}
                 {% if item.menu_type == menu %}
                     <li class="list-group-item">
-                        <div class="container2" align="center">
+                        <div class="container2" >
                             <div class="image">
                                 {% set tmp = item.name + '.jpg' %}
-                                <img class="img-responsive" src="{{ url_for('views.send_image', filename=item.item_image) }}" width="200" height="200">
+                                <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
                             </div>
                             <div class="text">
                                 <b>{{ item.name }}
@@ -130,12 +134,12 @@
                                 <i>{{ item.description }}</i>
                                 <!-- shows a button to edit and delete menu item by passing id to corresponding function -->
                                 <div style="padding-top: 20px;">
-                                    <button class="btn-del" type="button" onClick="deleteMenuItem({{ item.id }})">
-                                        <span aria-hidden="true">&times; Delete Entry</span>
-                                    </button>
+                                    <form action="/delete-menu-item/{{ item.id }}" method="POST">
+                                        <button class="btn-del" type="submit">Delete</button>
+                                    </form>
                                     <button id="edit_{{ item.id }}"
-                                        class="show btn-edit"
-                                        onClick="blueprint({{ item.id }})">Edit</button>
+                                            class="show btn-edit"
+                                            onClick="blueprint({{ item.id }})">Edit</button>
                                 </div>
                             </div>
                         </div>

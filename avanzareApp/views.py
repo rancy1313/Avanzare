@@ -8,7 +8,10 @@ import os
 # for image uploading
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 target = os.path.join(APP_ROOT, 'images/')
+if not os.path.isdir(target):
+    os.mkdir(target)
 views = Blueprint('views', __name__)
+
 
 # this function just returns the a specific image based on the name from the directory
 @views.route('/upload/<filename>')
@@ -16,102 +19,68 @@ def send_image(filename):
     return send_from_directory('images', filename)
 
 
-# this function is to add a menu item if it is a post method and load edit menu html if get method
-# any user can type http://127.0.0.1:5000/add-menu-item to get to this page so it should be changed to only render
-# if user is headChef
-# however, only items made by headChef are ever passed through to the html, so items made by a different user won't
-# ever be displayed
-@views.route('/add-menu-item', methods=['GET', 'POST'])
-@login_required
-def add_menu_item():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        # make sure no uses any weird characters or tries to do anything funny
-        special_chars = '`~@#^*()-_=+|[]{};:<>\"\\/'
-        for char in special_chars:
-            if char in name:
-                flash('No special chars allowed in item names (except \' ).', category="error")
-                return redirect(url_for('views.add_menu_item'))
-        price = request.form.get('price')
-        try:
-            # if price can't be converted to float then that means there are chars being used that are not digits
-            # might be a better way to implement this
-            float(price)
-        except:
-            flash('Only enter digits for price.', category="error")
-            return redirect(url_for('views.add_menu_item'))
-        # just a price check. I think this can be changed improved upon a lot by adding a minimum price point
-        # based on the menu type. For example, a menu item that is a PIZZA menu type would not cost below $10
-        # refreshes page if price == 0
-        if price == '0':
-            flash('No free items.', category="error")
-            return redirect(url_for('views.add_menu_item'))
+# get to edit menu page
+@views.route('/edit-menu', methods=['GET'])
+def edit_menu():
+    items = Menu.query.all()
+    # make sure page only loads for head chef
+    if current_user.email == 'headChef@gmail.com':
+        return render_template("edit_menu.html", items=items, user=current_user)
+    else:
+        flash('Sorry not allowed.', category="error")
+        return redirect(url_for('views.user_home'))
+
+# this is the function for the head chef to add any item they want to the menu. There are some requirements like menu
+# items cannot have the same name, price must be digits/float, and limited chars for name/description.
+@views.route('/test-add-to-menu', methods=['POST'])
+def testing_add_to_menu():
+    # get input values from the chef
+    name = request.form.get('name')
+    price = request.form.get('price')
+    description = request.form.get('description')
+    menu_type = request.form.get('menu_type')
+    gluten_free = request.form.get('gluten_free')
+    vegan = request.form.get('vegan')
+    tmp_file = request.files.get('file')
+    filename = name + '.jpg'
+    # if filename empty then do nothing because user doesn't want to change the item image
+    if tmp_file.filename != '':
+        destination = "/".join([target, filename])
+        tmp_file.save(destination)
+    else:
+        flash('Item image not submitted.', category="error")
+        return redirect(url_for('views.edit_menu'))
+    # check if there is any item in Menu that already has the name that was entered by chef
+    menu_item = Menu.query.filter_by(name=name).first()
+    # if menu_item exists then that means the item name is taken already
+    if menu_item:
+        flash('This dish name already exists.', category="error")
+    # test to make sure price is acceptable
+    try:
+        # if price can't be converted to float then that means there are chars being used that are not digits
+        # might be a better way to implement this
+        float(price)
         # convert str type price to format it in $0.00 format
         price = "{:,.2f}".format(float(price))
-        # fetching description to make sure no special chars in it except for apostrophe
-        description = request.form.get('description')
-        for char in special_chars:
-            if char in description:
-                flash('No special chars allowed in description (except \' ).', category="error")
-                return redirect(url_for('views.add_menu_item'))
-        # get extra item info from form
-        gluten_free = request.form.get('gluten_free')
-        vegan = request.form.get('vegan')
-        menu_type = request.form.get('menu_type')
-        # check if there is any item in Menu that already has the name that was entered by chef
-        menu_item = Menu.query.filter_by(name=name).first()
-        # create path for image storing
-        target = os.path.join(APP_ROOT, 'images/')
-
-        # if path doesn't exist create it
-        if not os.path.isdir(target):
-            os.mkdir(target)
-        # fetch file submitted by chef
-        file_tmp = request.files.getlist('file')
-        # if menu_item exists then that means the item name is taken already
-        if menu_item:
-            flash('This dish name already exists.', category="error")
-        #elif len(description) > 10000:
-            #flash('Description must be less than 10,000 characters.', category="error")
-        # this makes sure that an image is submitted when creating an item else an error is raised
-        # if filename == "" then that means no file was submitted
-        elif file_tmp[0].filename == "":
-            flash('No image was selected.', category="error")
-        else:
-            # add the item with info entered by chef and commit
-            new_menu_item = Menu(name=name, price=price, description=description, menu_type=menu_type, gluten_free=gluten_free, vegan=vegan, user_id=current_user.id)
-            db.session.add(new_menu_item)
-            db.session.commit()
-            #login_user(user, remember=True)
-            # this saves the image file that was submitted to the "images" folder
-            # this doesn't have to be in a for loop because only one images should be submitted for an item
-            # however it is in a for loop because I was thinking about making it so the user can view multiple photos
-            # associated to a food item. This loop might need to be changed if I don't come back and add that feature
-            for file in request.files.getlist('file'):
-                filename = name + '.jpg'
-                destination = "/".join([target, filename])
-                file.save(destination)
-            # refresh page to show new item added in edit menu html
-            flash('New item added to menu!!!', category="success")
-            user = User.query.filter(User.email == 'headChef@gmail.com').first()
-            items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
-            return render_template("edit_menu.html", items=items, user=current_user)
-        # this is needed just in case to show items just in case add item gets error
-    # technically all items from Menu are created by chef, so I can just fetch it all from Menu
-    # i had it like this because originally I was going to have one class for Menu and Menu_order
-    # originally I would have needed to search by Chef's user id. Since I separated both then
-    # fetching by chef's user id becomes pointless. However, I do not want to change this because
-    # I might combine both Menu classes and then searching by chef's Id might be necessary
-    user = User.query.filter(User.email == 'headChef@gmail.com').first()
-    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
-    return render_template("edit_menu.html", items=items, user=current_user)
-
-
-
-
-
-
-
+    # (Exception,) stop 'too broad' exception msg
+    except (Exception,):
+        # refresh page and send error message
+        flash('Only enter digits for price.', category="error")
+        return redirect(url_for('views.edit_menu'))
+    # test to check against any special chars
+    special_chars = '`~@#^*()-_=+|[]{};:<>\\/'
+    for char in special_chars:
+        # check if char is in name/description
+        if char in name + description:
+            message = 'Some special chars are not permitted such as: ' + char
+            flash(message, category="error")
+            return redirect(url_for('views.add_menu_item'))
+    # if all is good then create the item and refresh page
+    item = Menu(name=name, price=price, description=description, menu_type=menu_type, gluten_free=gluten_free,
+                vegan=vegan, item_image=filename, user_id=current_user.id)
+    db.session.add(item)
+    db.session.commit()
+    return redirect(url_for('views.edit_menu'))
 
 
 @views.route('/user_home', methods=['GET', 'POST'])
@@ -160,6 +129,7 @@ def order():
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     return render_template("order.html", items=items, new_order=new_order, user=current_user)
+
 
 # this function is to add an item to the order
 # it is set up to add an item based on the different ways an item could be added
@@ -291,28 +261,6 @@ def add_to_order(order_id):
         db.session.commit()
         return redirect(url_for('views.user_home'))
 
-# function to delete an item from menu using java and jsonify. could be done without like i did with delete by quantity
-# in add_to_order function. I liked trying both ways.
-@views.route('/delete-item', methods=['POST', 'GET'])
-def delete_item():
-    # get item id and item data and then delete item
-    item = json.loads(request.data)
-    itemId = item['itemId']
-    item = Menu.query.get(itemId)
-    # delete img associated with menu item b/c new dishes with same name could be added and that could cause issues or
-    # take up space in the image folder
-    filename = item.name + '.jpg'
-    target = os.path.join(APP_ROOT, 'images/')
-    os.unlink(os.path.join(target, filename))
-    #  checks if item exists might not be a necessary test
-    if item:
-        if item.user_id == current_user.id:
-            db.session.delete(item)
-            db.session.commit()
-            flash('ITEM DELETED!', category="success")
-    else:
-        flash('error!', category="error")
-    return jsonify({})
 
 # renders views order page for chef to see active orders. Active order are orders that are still being prepared
 # inactive orders are orders that were completed. In this page inactive orders can be cleared. The idea behind that
@@ -323,7 +271,9 @@ def delete_item():
 def view_orders():
     active_orders = Order.query.filter(Order.is_active == 'Active').all()
     inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
-    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
+    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders,
+                           user=current_user)
+
 
 # function to deactivate active orders
 # it just fetches the order by id and sets the order is_active variable to Inactive and refreshes page
@@ -334,7 +284,9 @@ def deactivate_orders(id):
     active_orders = Order.query.filter(Order.is_active == 'Active').all()
     inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
     db.session.commit()
-    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
+    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders,
+                           user=current_user)
+
 
 # this sets all inactive orders to clear so they don't appear in view orders and takes up space
 @views.route('/clear-inactive-orders', methods=['POST', 'GET'])
@@ -345,7 +297,9 @@ def clear_inactive_orders():
     db.session.commit()
     active_orders = Order.query.filter(Order.is_active == 'Active').all()
     inactive_orders = Order.query.filter(Order.is_active == 'Inactive').all()
-    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders, user=current_user)
+    return render_template('view_orders.html', active_orders=active_orders, inactive_orders=inactive_orders,
+                           user=current_user)
+
 
 # this is a feature for the user to order a previous order again
 # just fetches the order by id and copies the old order details to a new order, and it can be edited and resubmitted
@@ -393,6 +347,7 @@ def order_again(id):
         active_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.is_active == "Active").all()
         return redirect(url_for('views.user_home'))
 
+
 # a function to create news post and refreshes create news page
 @views.route('/create-news', methods=['GET', 'POST'])
 @login_required
@@ -409,6 +364,7 @@ def create_news():
     news = db.session.query(News).order_by(News.id.desc()).all()
     return render_template("create_news.html", news=news, user=current_user)
 
+
 # deletes news post using java and jsonify
 @views.route('/delete-news-post', methods=['POST', 'GET'])
 def delete_news_post():
@@ -424,31 +380,25 @@ def delete_news_post():
         flash('error!', category="error")
     return jsonify({})
 
+
 @views.route('/testing', methods=['POST', 'GET'])
 def testing():
     print('testing')
     return render_template('testing.html', user=current_user)
 
-@views.route('/test-add-to-menu', methods=['POST'])
-def testing_add_to_menu():
-    print('add_to_menu')
-    name = request.form.get('name')
-    price = request.form.get('price')
-    description = request.form.get('description')
-    item = Menu(name=name, price=price, description=description, menu_type='APPETIZERS', gluten_free='NO',
-                         vegan='NO', user_id=current_user.id)
-    db.session.add(item)
-    db.session.commit()
-    return redirect(url_for('views.testing'))
 
-
-@views.route('/test-delete/<int:item_id>', methods=['POST'])
-def test_delete(item_id):
-    print('delete')
+# this is function is to delete an item from the menu. It just finds the item by id and then deletes it. It also deletes
+# the image associated with that item from the images directory
+@views.route('/delete-menu-item/<int:item_id>', methods=['POST'])
+def delete_menu_item(item_id):
     item = Menu.query.filter_by(id=item_id).first()
+    filename = item.name + '.jpg'
+    os.unlink(os.path.join(target, filename))
     db.session.delete(item)
     db.session.commit()
-    return redirect(url_for('views.testing'))
+    flash('Item deleted!', category="success")
+    return redirect(url_for('views.add_menu_item'))
+
 
 # this function is to edit any item from the menu
 # it gets an id from the button when the form is submitted it has an action for this decorator. Then whatever values
@@ -459,14 +409,20 @@ def edit_menu_item(item_id):
     item = Menu.query.filter_by(id=item_id).first()
     # get all the user input values
     item.name = request.form.get('name')
+    # we have to rename the image associated with this item if the name changes
+    # we change the name of the image before saving to 'images' folder because some images have really long names
+    # and naming image after the food it is associated with makes it easier to find in the images folder
+    os.renames(target + item.item_image, target + item.name + '.jpg')
     item.price = request.form.get('price')
     item.description = request.form.get('description')
     item.gluten_free = request.form.get('gluten_free')
     item.vegan = request.form.get('vegan')
     item.menu_type = request.form.get('menu_type')
     tmp_file = request.files.get('file')
+    item.item_image = item.name + '.jpg'
     # if filename empty then do nothing because user doesn't want to change the item image
     if tmp_file.filename != '':
+        os.unlink(os.path.join(target, item.item_image))
         # else change the image
         filename = item.name + '.jpg'
         destination = "/".join([target, filename])
@@ -475,4 +431,5 @@ def edit_menu_item(item_id):
         item.item_image = filename
     db.session.commit()
     # return to edit menu html
+    flash('Item edited!', category="success")
     return redirect(url_for('views.add_menu_item'))

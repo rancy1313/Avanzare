@@ -22,6 +22,7 @@
 .text {
     font-size: 20px;
     padding-left: 40px;
+    width: 100%;
 }
 nav{
     height:150px;
@@ -45,14 +46,15 @@ nav{
 .btn-del {
     background-color: #FA8072;
     color: white;
-    padding: 9px;
+    padding: 9px 20px;
     font-size: 16px;
-    border: none;
     cursor: pointer;
-    margin: 15px;
+    margin-top: 15px;
+    margin-left: 15px;
     border: solid;
     border-width: 1px;
     border-color: red;
+    float: right;
 }
 /* HOVER EFFECTS STOPPED WORKING :( */
 /* hover effect for buttons #CD5C5C */
@@ -63,16 +65,15 @@ nav{
 .btn-edit {
     background-color: #CCCCFF;
     color: black;
-    padding: 9px;
+    padding: 9px 20px;
     font-size: 16px;
-    border: none;
     cursor: pointer;
-    width: 120px;
-    align: center;
-    margin: 15px;
+    margin-top: 15px;
+    margin-left: 15px;
     border: solid;
     border-width: 1px;
-    border-color: #9d9dfa;;
+    border-color: #9d9dfa;
+    float: right;
 }
 /* hover effect for buttons */
 .btn-edit:hover, .btn-edit:focus {

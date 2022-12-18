@@ -39,7 +39,7 @@
                 {% if user.is_authenticated %}
                     <!-- If user is head chef then these appear in nav-->
                     {% if user.email == "headChef@gmail.com" %}
-                        <a class="nav-item nav-link" id="edit_menu" href="/add-menu-item">Edit Menu</a>
+                        <a class="nav-item nav-link" id="edit_menu" href="/edit-menu">Edit Menu</a>
                         <a class="nav-item nav-link" id="view_orders" href="/view-orders">View Orders</a>
                         <a class="nav-item nav-link" id="create_news" href="/create-news">Create News</a>
                     {% endif %}

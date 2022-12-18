@@ -94,7 +94,7 @@
     <br />
     {% set tmp = item.name + '.jpg' %}
     <label for="previous_image"><b>Previous Image:</b></label>
-    <img id="previous_image" class="img-responsive image" src="{{ url_for('views.send_image', filename=item.item_image) }}" width="200" height="200">
+    <img id="previous_image" class="img-responsive image" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
     <br />
     <button type="submit" class="btn-add">Edit Item</button>
 </form>
