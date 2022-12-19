@@ -10,7 +10,9 @@
 .blackLine {
     border:1px solid black;
     border-color: #800000;
+    padding: 15px;
 }
+
 .container2 {
     margin: 10px;
     display: flex;
@@ -22,7 +24,7 @@
 .text {
     font-size: 20px;
     padding-left: 40px;
-    width: 100%;
+    width: 80%;
 }
 nav{
     height:150px;
@@ -130,3 +132,4 @@ form > * {
 input:invalid {
     background-color: lightpink;
 }
+

@@ -13,7 +13,6 @@
 {% endfor %}
 <h1 align="center">Active Orders for {{ user.first_name }}: {{ count.value }}</h1>
 <br />
-<p id="demoo">hiiii</p>
 {% set lst_dates = [] %}
 <!-- this loop will display users active orders in reverse from newest to oldest. -->
 {% for order in active_orders|reverse %}
@@ -124,19 +123,16 @@
     {% if order.is_active != 'Active' %}
         {% set tmp_date = order.date|string %}
         {% set tmp_date = tmp_date[5:7] + '/' + tmp_date[8:10] + '/' + tmp_date[:4] + tmp_date[10:] %}
+        {% set lst =  [] %}
+        {% set tmp_tags = order.id|string + '_tag' %}
         <p hidden>{{ lst_dates.append([order.id, tmp_date]) }}</p>
         <br />
         <div class="blackLine" style="width: 100%">
             <div class="text">
-                {% set lst =  [] %}
-                <div>
-                    {% set tmp_tags = order.id|string + '_tag' %}
-                    <h3 id="{{ tmp_tags }}"></h3>
-                </div>
-                <p id="testOrder_{{ order.id }}">jin</p>
+                <h3 id="{{ tmp_tags }}"></h3>
                 <table id="table_{{ order.id }}" style="width:95%">
                     <tr>
-                        <th>Item</th>
+                        <th>Items</th>
                         <th>Quantity</th>
                         <th>Price</th>
                     </tr>
@@ -156,7 +152,6 @@
                                 <tr>
                                     <td>{{ item.name }}</td>
                                     <td>{{ count.value }}</td>
-                                    <p>{{item.price }}</p>
                                     {% set tmp = (item.price | float) %}
                                     <td>{{ "${:,.2f}".format(count.value * tmp) }}</td>
                                     <td hidden>{{ item.description }}</td>
@@ -170,19 +165,13 @@
                         {% endif %}
                     {% endfor %}
                 </table>
-                <button onclick="testOrderAgain({{ order.id }})">Test order</button>
-                <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-                {% if "${:,.2f}".format(order.total + order.taxes) == "$-0.00" %}
-                   <h3>Total: $0.00</h3>
-                {% else %}
                 <h3>Taxes: $<p id="displayed_taxes_{{ order.id }}" style="display: inline;">{{ order.taxes }}</p></h3>
-                    <h3>Total: $<p id="displayed_total_{{ order.id }}" style="display: inline;">{{ order.total }}</p></h3>
-                {% endif %}
+                <h3>Total: $<p id="displayed_total_{{ order.id }}" style="display: inline;">{{ order.total }}</p></h3>
                 {% if order.comment != "" and order.comment is not none %}
                     <div>Order Comment: {{ order.comment }}</div>
                 {% endif %}
-                <a class="nav-item nav-link" href="{{ url_for('views.order_again', id=order.id) }}">Order Again</a>
                 <br />
+                <button onclick="testOrderAgain({{ order.id }})" class="btn-add">Order Again</button>
             </div>
         </div>
     {% endif %}

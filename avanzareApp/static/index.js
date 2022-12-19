@@ -90,7 +90,6 @@ function loadPastOrder(new_order) {
         let price = individual_item[2].slice(1, individual_item[2].length)
 
         price = price / individual_item[1];
-        document.getElementById('makeList').innerText = price;
         order_total = document.getElementById('total').value;
         addToOrder(individual_item[1], individual_item[3], individual_item[0], price, 'REGULAR', order_total)
         //addToOrder(quantity, item_id, item_name, item_price, item_accommodation, total) {

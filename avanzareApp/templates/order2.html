@@ -7,8 +7,8 @@
  item once and the quantity of it. It also displays the cost total of each item. After a user submits an order, they are
  directed to their personal home page-->
 <h1 align="center"> Hello {{ user.first_name }}</h1>
-<h1 id="makeList">test</h1>
-<h1>order</h1>
+<!-- this refreshes the order just by refreshing the page -->
+<a class="btn-edit" id="order" href="/order">Clear Order</a>
 {% if new_order %}
     <h1>hi</h1>
     <body onload="loadPastOrder({{ new_order|safe }})"></body>
@@ -21,25 +21,17 @@
         <th>Remove Item</th>
     </tr>
 </table>
-<button onclick="makeList()">COMPLETE TEST</button>
-<!-- this refreshes the order just by refreshing the page -->
-<a class="btn-edit" id="order" href="/order">Clear Order</a>
+<br />
 {% set lst =  [] %}
 <!-- taxes are 6.25% -->
+<!-- I cannot pass the value of a p tag as a js param, so I also put it in a hidden textarea -->
 <h1>Taxes: $<p id="displayed_taxes" style="display: inline;">0.00</p></h1>
 <h1>Total: $<p id="displayed_total" style="display: inline;">0.00</p></h1>
 <textarea id="total" hidden>0</textarea>
-<!-- this form is to submit the order and pass the comment and complete_order variables to add_to_order() -->
-<form method="POST">
-    <div>Have any comments or food accommodation requests</div>
-    <textarea name="comment" id="comment" class="form-control"></textarea>
-    <br />
-    <textarea hidden
-              type="complete_order"
-              id="complete_order"
-              name="complete_order">TRUE</textarea>
-    <button type="submit" class="btn btn-primary">Complete Order</button>
-</form>
+<!-- comment for the order -->
+<label for="comment"><b>Have any comments or food accommodation requests</b></label>
+<textarea name="comment" id="comment" class="form-control"></textarea>
+<button onclick="makeList()" class="btn btn-primary" style="margin: 20px 0px;">Complete Order</button>
 <br />
 <!-- create a black line around the order menu -->
 <div class="blackLine">
@@ -92,7 +84,7 @@
                                 </th>
                                 <th>
                                     <div class="text">
-                                        {{ item.name }}
+                                        <b>{{ item.name }}</b>
                                         {% set tmp = "$" + (item.price | string) %}
                                         {{ tmp }}
                                         {% if item.gluten_free == "GLUTEN FREE" %}
@@ -105,25 +97,26 @@
                                             <i>{{ gfv }}</i>
                                         {% endif %}
                                         <br />
-                                        {{ item.description }}
+                                        <i>{{ item.description }}</i>
                                         <br />
                                     </div>
                                 </th>
-                                <th>
+                                <div style="float: right; width: 250px;">
                                     <button onclick="addToOrder(document.getElementById('quantity_{{ item.id }}').value,
                                                     {{ item.id }}, '{{ item.name }}', {{ item.price }},
                                                     document.getElementById('dish_accommodation_{{ item.id }}').value,
-                                                    document.getElementById('total').value)">Plus</button>
+                                                    document.getElementById('total').value)"
+                                            class="btn-add" style="margin: 15px 0px;">Plus</button>
                                     <!-- will only display option to add gf/v option if the dish has it available as an option -->
                                     {% if (item.gluten_free == "GLUTEN FREE") or (item.vegan == "VEGAN") %}
-                                    <input  style="width: 30%"
+                                    <input
                                                     type="number" min="1" step="1"
                                                     class="form-control"
                                                     id="quantity_{{ item.id }}"
                                                     name="quantity"
                                                     placeholder=" Qnty"/>
-                                    <div>Gluten Free/Vegan</div>
-                                    <select class="selectpicker" type="dish_accommodation" id="dish_accommodation_{{ item.id }}" name="dish_accommodation">
+                                    <label for="dish_accommodation_{{ item.id }}">Gluten Free/Vegan</label>
+                                    <select class="selectpicker" id="dish_accommodation_{{ item.id }}" name="dish_accommodation">
                                         <optgroup label="CHOOSE ONE" >
                                             <option>REGULAR</option>
                                             {% if item.gluten_free == "GLUTEN FREE" %}
@@ -141,7 +134,7 @@
                                     {% set tmp_id = "dish_accommodation_" + item.id|string %}
                                     <select id="{{ tmp_id }}" hidden><option>REGULAR</option></select>
                                     {% endif %}
-                                </th>
+                                </div>
                             </tr>
                         </table>
                     </li>

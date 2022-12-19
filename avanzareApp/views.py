@@ -398,6 +398,7 @@ def list_of_items():
     new_order.total = items_list[1]['total']
     new_order.taxes = items_list[2]['taxes']
     new_order.comment = items_list[3]['comment']
+    new_order.name = current_user.first_name
     db.session.add(new_order)
     db.session.commit()
     items = items_list[0]['listOfItem'].split('#')
