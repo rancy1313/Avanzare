@@ -102,13 +102,13 @@ def user_home():
 @login_required
 def test_order():
     items = Menu.query.all()
-    # delete any empty orders. Everytime we go to the order page, we create a new order object, so we should delete
+    '''# delete any empty orders. Everytime we go to the order page, we create a new order object, so we should delete
     # the uncompleted order objects to not have a bunch of empty orders in the db.
     error_orders = Order.query.filter(Order.user_id == current_user.id).filter(Order.total == 0).delete()
     new_order = new_order = Order(user_id=current_user.id, taxes=0, total=0)
     db.session.add(new_order)
-    db.session.commit()
-    return render_template("order2.html", items=items, new_order=new_order, user=current_user)
+    db.session.commit()'''
+    return render_template("order2.html", items=items, user=current_user)
 
 # delete_this this function
 @views.route('/order', methods=['GET', 'POST'])
@@ -387,6 +387,55 @@ def delete_news_post():
         flash('error!', category="error")
     return jsonify({})
 
+
+@views.route('/list-of-items', methods=['POST', 'GET'])
+def list_of_items():
+    items_list = json.loads(request.data)
+    items_list = items_list['values']
+    new_order = Order()
+    new_order.user_id = current_user.id
+    new_order.is_active = 'Active'
+    new_order.total = items_list[1]['total']
+    new_order.taxes = items_list[2]['taxes']
+    new_order.comment = items_list[3]['comment']
+    db.session.add(new_order)
+    db.session.commit()
+    items = items_list[0]['listOfItem'].split('#')
+    for item in items:
+        tmp_item = item.split('*')
+        for quantity in range(int(tmp_item[1])):
+            menu_item = Menu.query.filter_by(id=tmp_item[2]).first()
+            tmp_item_object = Menu_order()
+            tmp_item_object.name = tmp_item[0]
+            tmp_item_object.price = menu_item.price
+            tmp_item_object.description = menu_item.id
+            tmp_item_object.order_id = new_order.id
+            db.session.add(tmp_item_object)
+            db.session.commit()
+    return jsonify({})
+
+@views.route('/dud', methods=['POST'])
+def dud():
+    print('dud')
+    return jsonify({})
+
+
+@views.route('/testOrderAgain/<string_list>/<total>/<taxes>', methods=['POST', 'GET'])
+def testOrderAgain(string_list, total, taxes):
+    print(string_list, total, taxes)
+    print('before the return')
+    items = Menu.query.all()
+    new_order = [string_list + '^' + total + '^' + taxes]
+    return render_template("order2.html", items=items, new_order=new_order, user=current_user)
+
+
+@views.route('/this-is-test', methods=['POST'])
+def this_is_test():
+    print('were in the test func')
+    var1 = json.loads(request.data)
+    var1 = var1['vars']
+    print(var1)
+    return jsonify({})
 
 
 # this is function is to delete an item from the menu. It just finds the item by id and then deletes it. It also deletes

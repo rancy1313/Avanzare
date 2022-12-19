@@ -38,6 +38,7 @@ class Menu_order(db.Model):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
 
+
 # this class is to structure an order and has info about the order
 # and it has a list of items related to this order
 class Order(db.Model):
