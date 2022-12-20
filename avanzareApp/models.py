@@ -31,7 +31,7 @@ class Menu_order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     price = db.Column(db.String(150))
-    description = db.Column(db.String(10000))
+    item_id = db.Column(db.String(10000))
     menu_type = db.Column(db.String(150))
     gluten_free = db.Column(db.String(150))
     vegan = db.Column(db.String(150))

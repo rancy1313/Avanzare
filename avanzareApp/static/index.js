@@ -7,52 +7,43 @@ function deleteNewsPost(news_postId) {
   });
 } ///this will refresh the page after deletes
 
-function test(var1, var2, var3) {
-    one_var = var1 + var2 + var3
-  fetch("/this-is-test", {
-    method: "POST",
-    body: JSON.stringify({vars: [{ one_var: one_var }, { var1: var1 }]}),
-  }).then((_res) => {
-    window.location.href = "/user_home";
-  });
-}
-
 function makeList() {
-    let string_list = '';
-    const table = document.getElementById('actual_order');
-    var table_rows = table.getElementsByTagName('tr');
-    for (let i = 1; i < table_rows.length; i++) {
-        var table_data = table_rows[i].getElementsByTagName('td');
-        for (let x = 0; x < table_data.length; x++) {
-            if (x == 0 || x == 1 || x == 4) {
-                if (x != 4) {
-                    string_list += table_data[x].innerText + '*';
-                } else {
-                    string_list += table_data[x].innerText;
+    total = document.getElementById('displayed_total').innerText;
+    if (total != 0) {
+        let string_list = '';
+        const table = document.getElementById('actual_order');
+        var table_rows = table.getElementsByTagName('tr');
+        for (let i = 1; i < table_rows.length; i++) {
+            var table_data = table_rows[i].getElementsByTagName('td');
+            for (let x = 0; x < table_data.length; x++) {
+                if (x == 0 || x == 1 || x == 4) {
+                    if (x != 4) {
+                        string_list += table_data[x].innerText + '*';
+                    } else {
+                        string_list += table_data[x].innerText;
+                    }
                 }
             }
+            if (i != table_rows.length - 1) {
+                string_list += "#"
+            }
         }
-        if (i != table_rows.length - 1) {
-            string_list += "#"
-        }
+        taxes = document.getElementById('displayed_taxes').innerText;
+        comment = document.getElementById('comment').value;
+        passListToFlask(string_list, total, taxes, comment);
     }
-    taxes = document.getElementById('displayed_taxes').innerText;
-    total = document.getElementById('displayed_total').innerText;
-    comment = document.getElementById('comment').value;
-    passListToFlask(string_list, total, taxes, comment);
 }
 
 function passListToFlask(listOfItem, total, taxes, comment) {
-    fetch("/list-of-items", {
+    fetch("/complete-order", {
         method: "POST",
         body: JSON.stringify({ values: [{ listOfItem: listOfItem }, { total: total }, { taxes: taxes }, { comment: comment }] }),
     }).then((_res) => {
-        window.location.href = "/user_home";
+        window.location.href = "/user-home";
     });
 }
 
-
-function testOrderAgain(order_id) {
+function orderAgain(order_id) {
     let string_list = '';
     const order_table = document.getElementById(`table_${order_id}`);
     var table_rows = order_table.getElementsByTagName('tr');
@@ -71,33 +62,22 @@ function testOrderAgain(order_id) {
     }
     taxes = document.getElementById('displayed_taxes_' + order_id).innerText;
     total = document.getElementById('displayed_total_' + order_id).innerText;
-
-    fetch("/dud", {
-        method: "POST",
-      }).then((_res) => {
-        window.location.href = `/testOrderAgain/${string_list}/${total}/${taxes}`;
-      });
+    window.location.href = `/orderAgain/${string_list}/${total}/${taxes}`;
 }
 
 function loadPastOrder(new_order) {
-
     const new_order_items = new_order[0].split('^');
-    let total = new_order_items.pop();
     let taxes = new_order_items.pop();
+    let total = new_order_items.pop();
     for (let i = 0; i < new_order_items.length; i++) {
         const individual_item = new_order_items[i].split('*')
-
         let price = individual_item[2].slice(1, individual_item[2].length)
-
         price = price / individual_item[1];
         order_total = document.getElementById('total').value;
         addToOrder(individual_item[1], individual_item[3], individual_item[0], price, 'REGULAR', order_total)
-        //addToOrder(quantity, item_id, item_name, item_price, item_accommodation, total) {
     }
-    //const individual_item = new_order_items.split('*')
     document.getElementById('displayed_total').innerText = total;
     document.getElementById('displayed_taxes').innerText = taxes;
-
 }
 
 function loadDates(lst_dates) {
@@ -249,4 +229,20 @@ function removeFromOrder(quantity, item_id, item_name, item_price, total) {
         const quantity_reset = document.getElementById('delete_quantity_' + item_name);
         quantity_reset.value = "";
     }
+}
+
+// js for collapsible sections on the user home pages
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+  });
 }

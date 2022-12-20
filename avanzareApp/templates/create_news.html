@@ -4,9 +4,9 @@
 <!-- the chef can enter a news title, description, and news type. The chef can delete any news post too -->
 <!-- form to get news post details for create_news_post() -->
 <form method="POST">
-    <h1 align="center">Create news post</h1>
+    <h1 align="center"><b>Create news post</b></h1>
     <div class="form-group">
-        <label for="title" >News Title</label>
+        <label for="title"><b>News Title:</b></label>
         <input
                 class="form-control"
                 id="title"
@@ -14,9 +14,9 @@
                 placeholder="ENTER NEWS TITLE"
         />
     </div>
-    <div>Text</div>
+    <label for="text"><b>Text:</b></label>
     <textarea name="text" id="text" class="form-control"></textarea>
-    <label for="news_type">News Type</label>
+    <label for="news_type"><b>News Type:</b></label>
     <select class="selectpicker" id="news_type" name="news_type">
         <option>SALE</option>
         <option>NEW ITEM</option>
@@ -39,13 +39,13 @@
             {% for news_post in news %}
                 {% if news_post.news_type == news_type %}
                       <li class="list-group-item">
-                          {{ news_post.title }}
+                          <b>{{ news_post.title }}</b>
                           <br />
                           {{ news_post.text }}
                           <br />
                           <!-- delete each news post by passing news post id -->
                           <button type="button" class="close" onClick="deleteNewsPost({{ news_post.id }})">
-                              <span aria-hidden="true">&times;</span>
+                              <span aria-hidden="true">&times; Delete</span>
                           </button>
                       </li>
                 {% endif %}

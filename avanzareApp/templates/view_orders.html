@@ -15,7 +15,7 @@
 <h1 align="center">Active Orders: {{ count.value }}</h1>
 {% for order in active_orders|reverse %}
     <!-- creates black line over each order -->
-    <div class="blackLine">
+    <div class="active_orders">
         <div class="text">
             {% set lst =  [] %}
             <table style="width:100%">
@@ -74,7 +74,9 @@
             {% if order.comment != "" and order.comment is not none %}
                 <div>Order Comment: {{ order.comment }}</div>
             {% endif %}
-            <a class="nav-item nav-link" href="{{ url_for('views.deactivate_orders', id=order.id) }}">Set Order to Inactive</a>
+            <form action="/deactivate-order/{{ order.id }}" form="POST">
+                <button class="btn-del" style="float: none" type="submit">Set Order to Inactive</button>
+            </form>
             <br />
         </div>
     </div>
@@ -87,11 +89,13 @@
 {% endfor %}
 <h1 align="center">Inactive Orders: {{ count.value }}</h1>
 <!-- button to clear inactive orders -->
-<a class="nav-item nav-link" href="{{ url_for('views.clear_inactive_orders') }}">Clear Inactive Orders</a>
+<form action="/clear-inactive-orders" method="POST">
+    <button class="btn-edit" type="submit" style="float: none">Clear Inactive Orders</button>
+</form>
 <!-- loops through all active orders in reverse from newest to oldest -->
 {% for order in inactive_orders|reverse %}
     <!-- creates black line over each order -->
-    <div class="blackLine">
+    <div class="past_orders">
         <div class="text">
             {% set lst =  [] %}
             <table style="width:100%">

@@ -6,88 +6,33 @@
  can delete items from the order by quantity. The total and taxes(8%) are show under the table. The table only shows an
  item once and the quantity of it. It also displays the cost total of each item. After a user submits an order, they are
  directed to their personal home page-->
-<h1 align="center"> Hello {{ user.first_name }}, here is your order. </h1>
+<h1 align="center"> Hello {{ user.first_name }}</h1>
 <!-- this refreshes the order just by refreshing the page -->
-<a class="btn-edit" id="order" href="/order">Clear Order</a>
-{% set lst =  [] %}
-<!-- the table displays the order details by item info as each row -->
-<table style="width:100%">
+<form action="/order" method="GET">
+    <button class="btn-edit" id="order">Clear Order</button>
+</form>
+{% if new_order %}
+    <body onload="loadPastOrder({{ new_order|safe }})"></body>
+{% endif %}
+<table id="actual_order" style="width:100%">
     <tr>
         <th>Item</th>
         <th>Quantity</th>
         <th>Price</th>
         <th>Remove Item</th>
     </tr>
-    <!-- make a unique list of item names and iterate through it. Will only display item name once before it is added to
-     the unique list. Then count counts how many times that item is in orders items variable and displays it next to the
-      items name -->
-    {% for item in new_order.items %}
-        {% set count = namespace(value=0) %}
-        <!-- set print once to once and reset it at the end of the loop -->
-        {% set print_once = 1 %}
-        {% if item.name not in lst %}
-            {% for item_count in new_order.items %}
-                <!-- count how many of each item there is by item name -->
-                {% if item.name == item_count.name %}
-                    {% set count.value = count.value + 1 %}
-                {% endif %}
-            {% endfor %}
-            {% if print_once == 1 %}
-                <tr>
-                    <!-- print this once for each different item on the order -->
-                    <th>{{ item.name }}</th>
-                    <th>{{ count.value }}</th>
-                    {% set tmp = (item.price | float) %}
-                    <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
-                    <th>
-                        <!-- this form is to pass the item id to know how much quantity of this item should be deleted -->
-                        <form action="/add-to-order/{{ new_order.id }}" method="POST">
-                            <input style="width: 25%"
-                                   type="delete_quantity"
-                                   id="delete_quantity"
-                                   name="delete_quantity"
-                                   placeholder="Quantity"/>
-                            <textarea hidden
-                                                type="itemId2"
-                                                id="itemId2"
-                                                name="itemId2">{{item.id}}</textarea>
-                            <button class="btn-del-order">Delete</button>
-                        </form>
-                    </th>
-                </tr>
-                <br />
-            {% endif %}
-            {% set print_once = 1 %}
-            <!-- append item name so it won't print the item's info again -->
-            <div hidden>
-                {{ lst.append(item.name) }}
-            </div>
-        {% endif %}
-    {% endfor %}
 </table>
-<!-- print taxes and total.  -->
-{% if "${:,.2f}".format(new_order.taxes) == "$-0.00" %}
-    <h3>Taxes: $0.00</h3>
-{% else %}
-    <h3>Taxes: {{ "${:,.2f}".format(new_order.taxes) }}</h3>
-{% endif %}
-<!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-{% if "${:,.2f}".format(new_order.total + new_order.taxes) == "$-0.00" %}
-   <h3>Total: $0.00</h3>
-{% else %}
-    <h3>Total: {{ "${:,.2f}".format(new_order.total + new_order.taxes) }}</h3>
-{% endif %}
-<!-- this form is to submit the order and pass the comment and complete_order variables to add_to_order() -->
-<form method="POST">
-    <div>Have any comments or food accommodation requests</div>
-    <textarea name="comment" id="comment" class="form-control"></textarea>
-    <br />
-    <textarea hidden
-              type="complete_order"
-              id="complete_order"
-              name="complete_order">TRUE</textarea>
-    <button type="submit" class="btn btn-primary">Complete Order</button>
-</form>
+<br />
+{% set lst =  [] %}
+<!-- taxes are 6.25% -->
+<!-- I cannot pass the value of a p tag as a js param, so I also put it in a hidden textarea -->
+<h1>Taxes: $<p id="displayed_taxes" style="display: inline;">0.00</p></h1>
+<h1>Total: $<p id="displayed_total" style="display: inline;">0.00</p></h1>
+<textarea id="total" hidden>0</textarea>
+<!-- comment for the order -->
+<label for="comment"><b>Have any comments or food accommodation requests</b></label>
+<textarea name="comment" id="comment" class="form-control"></textarea>
+<button onclick="makeList()" class="btn btn-primary" style="margin: 20px 0px;">Complete Order</button>
 <br />
 <!-- create a black line around the order menu -->
 <div class="blackLine">
@@ -130,19 +75,16 @@
             {% for item in items %}
                 {% if item.menu_type == menu %}
                     <li class="list-group-item">
-                        <table>
-                            <tr>
-                                <th>
-                                    {% set tmp = item.name + '.jpg' %}
-                                    <div class="image" align="right">
-                                        <img class="img-responsive" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="text">
-                                        {{ item.name }}
+                        {% set tmp = item.name + '.jpg' %}
+                        <div class="row">
+                            <div class="column" style="width: 20%">
+                                <img class="img-responsive image" src="{{ url_for('views.send_image', filename=tmp) }}" width="200" height="200">
+                            </div>
+                            <div class="column" style="width: 50%">
+                                <div class="text">
+                                    <b>{{ item.name }}
                                         {% set tmp = "$" + (item.price | string) %}
-                                        {{ tmp }}
+                                        <i>{{ tmp }}</i>
                                         {% if item.gluten_free == "GLUTEN FREE" %}
                                             <i>{{ gf }}</i>
                                         {% endif %}
@@ -152,52 +94,48 @@
                                         {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
                                             <i>{{ gfv }}</i>
                                         {% endif %}
-                                        <br />
-                                        {{ item.description }}
-                                        <br />
-                                    </div>
-                                </th>
-                                <th>
-                                    <!-- this form is to pass quantity/dish_accommodation/item_id to add_to_order() -->
-                                    <form action="/add-to-order/{{ new_order.id }}" method="POST">
-                                        <div class="form-group">
-                                            <label for="quantity">Quantity: </label>
-                                            <input  style="width: 30%"
-                                                    type="quantity"
-                                                    class="form-control"
-                                                    id="quantity"
-                                                    name="quantity"
-                                                    placeholder=" Qnty"
-                                            />
-                                            <!-- will only display option to add gf/v option if the dish has it available as an option -->
-                                            {% if (item.gluten_free == "GLUTEN FREE") or (item.vegan == "VEGAN") %}
-                                                <div>Gluten Free/Vegan</div>
-                                                    <select class="selectpicker" type="dish_accommodation" id="dish_accommodation" name="dish_accommodation">
-                                                        <optgroup label="CHOOSE ONE" >
-                                                            <option>REGULAR</option>
-                                                            {% if item.gluten_free == "GLUTEN FREE" %}
-                                                                <option>GLUTEN FREE</option>
-                                                            {% endif %}
-                                                            {% if item.vegan == "VEGAN" %}
-                                                                <option>VEGAN</option>
-                                                            {% endif %}
-                                                            {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
-                                                                <option>GLUTEN FREE AND VEGAN</option>
-                                                            {% endif %}
-                                                        </optgroup>
-                                                    </select>
+                                    </b>
+                                    <br />
+                                    <i>{{ item.description }}</i>
+                                    <br />
+                                </div>
+                            </div>
+                            <div class="column" style="width: 30%">
+                                <div style="width: 250px;">
+                                    <button onclick="addToOrder(document.getElementById('quantity_{{ item.id }}').value,
+                                                   {{ item.id }}, '{{ item.name }}', {{ item.price }},
+                                                    document.getElementById('dish_accommodation_{{ item.id }}').value,
+                                                    document.getElementById('total').value)"
+                                            class="btn-add" style="margin: 15px 0px;">Plus</button>
+                                    <input  type="number" min="1" step="1"
+                                            class="form-control"
+                                            id="quantity_{{ item.id }}"
+                                            name="quantity"
+                                            placeholder=" Qnty"/>
+                                    <!-- will only display option to add gf/v option if the dish has it available as an option -->
+                                    {% if (item.gluten_free == "GLUTEN FREE") or (item.vegan == "VEGAN") %}
+                                    <label for="dish_accommodation_{{ item.id }}">Accommodations</label>
+                                    <select class="selectpicker" id="dish_accommodation_{{ item.id }}" name="dish_accommodation">
+                                        <optgroup label="CHOOSE ONE" >
+                                            <option>REGULAR</option>
+                                            {% if item.gluten_free == "GLUTEN FREE" %}
+                                                <option>GLUTEN FREE</option>
                                             {% endif %}
-                                            <!-- a hidden field just to pass item id to the function -->
-                                            <textarea hidden
-                                                      type="itemId"
-                                                      id="itemId"
-                                                      name="itemId">{{item.id}}</textarea>
-                                        </div>
-                                        <button class="btn-add">Add to order</button>
-                                    </form>
-                                </th>
-                            </tr>
-                        </table>
+                                            {% if item.vegan == "VEGAN" %}
+                                                <option>VEGAN</option>
+                                            {% endif %}
+                                            {% if (item.gluten_free == "GLUTEN FREE") and (item.vegan == "VEGAN") %}
+                                                <option>GLUTEN FREE AND VEGAN</option>
+                                            {% endif %}
+                                        </optgroup>
+                                    </select>
+                                {% else %}
+                                    {% set tmp_id = "dish_accommodation_" + item.id|string %}
+                                    <select id="{{ tmp_id }}" hidden><option>REGULAR</option></select>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </li>
                 {% endif %}
             {% endfor %}
@@ -217,4 +155,3 @@ comment. Consumer Advisory: Raw or undercooked meat, poultry, seafood, or eggs m
 {% include "footer.html" %}
 
 {% endblock %}
-

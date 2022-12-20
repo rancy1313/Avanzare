@@ -21,17 +21,14 @@
     <p hidden>{{ lst_dates.append([order.id, tmp_date]) }}</p>
     {% set lst =  [] %}
     <!-- creates a black line around each order -->
-    <div class="blackLine" style="width: 100%;">
+    <div class="active_orders" style="width: 100%;">
         <div class="text">
-            <table style="width:95%">
+            {% set tmp_tag = order.id|string + '_tag' %}
+            <h3 id="{{ tmp_tag }}"></h3>
+            {% set tmp_tag_table = 'table_' + order.id|string %}
+            <table id="{{ tmp_tag_table }}" style="width:95%">
                 <tr>
-                    <th>
-                        {% set tmp_tag = order.id|string + '_tag' %}
-                        <h3 id="{{ tmp_tag }}"></h3>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Item</th>
+                    <th>Items</th>
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
@@ -47,11 +44,12 @@
                         {% endfor %}
                         {% if print_once == 1 %}
                             <tr>
-                                <th>{{ item.name }}</th>
-                                <th>{{ count.value }}</th>
+                                <td>{{ item.name }}</td>
+                                <td>{{ count.value }}</td>
                                 <!-- convert string price to float -->
                                 {% set tmp = (item.price | float) %}
-                                <th>{{ "${:,.2f}".format(count.value * tmp) }}</th>
+                                <td>{{ "${:,.2f}".format(count.value * tmp) }}</td>
+                                <td hidden>{{ item.item_id }}</td>
                             </tr>
                             <br />
                         {% endif %}
@@ -62,33 +60,24 @@
                     {% endif %}
                 {% endfor %}
             </table>
-            <!-- there was an issue with total and taxes being negative when adding and deleting items too fast -->
-            <!-- this is a temporary fix to a bug that might not exist anymore -->
-            <!-- bug seemed to go away after add_by_quantity feature was added but not sure needs further testing -->
-            {% if "${:,.2f}".format(order.taxes) == "$-0.00" %}
-                <b>Taxes: $0.00</b>
-            {% else %}
-                <b>Taxes: {{ "${:,.2f}".format(order.taxes) }}</b>
-            {% endif %}
-            <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-            {% if "${:,.2f}".format(order.total + order.taxes) == "$-0.00" %}
-                <h3>Total: $0.00</h3>
-            {% else %}
-                <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
-            {% endif %}
-            <!-- only show order comment if there is one -->
+            {% set tmp_tag_taxes = 'displayed_taxes_' + order.id|string %}
+            <h3>Taxes: $<p id="{{ tmp_tag_taxes }}" style="display: inline;">{{ order.taxes }}</p></h3>
+            {% set tmp_tag_total = 'displayed_total_' + order.id|string %}
+            <h3>Total: $<p id="{{ tmp_tag_total }}" style="display: inline;">{{ order.total }}</p></h3>
             {% if order.comment != "" and order.comment is not none %}
                 <div>Order Comment: {{ order.comment }}</div>
             {% endif %}
-            <a class="nav-item nav-link" href="{{ url_for('views.order_again', id=order.id) }}">Order Again</a>
+            <br />
+            <button onclick="orderAgain({{ order.id }})" class="btn-add">Order Again</button>
             <br />
         </div>
     </div>
     <br />
 {% endfor %}
 <br />
+<button type="button" class="collapsible">News</button>
+<div class="content">
 <!-- users can view all news posts under corresponding category -->
-<h1 align="center">News</h1>
 <ul class="list-group list-group-flush" id="items" style="width: 100%;">
     {% set print_once = 1 %}
     {% for news_type in ["SALE", "NEW ITEM", "IMPORTANT"] %}
@@ -110,6 +99,7 @@
     {% endfor %}
 </ul>
 <br />
+</div>
 <!-- count how many orders are not active -->
 {% set count = namespace(value=0) %}
 {% for order in user.orders %}
@@ -117,6 +107,8 @@
         {% set count.value = count.value + 1 %}
     {% endif %}
 {% endfor %}
+<br />
+<br />
 <h1>Past Orders: {{ count.value }}</h1>
 <!-- show past orders from newest to oldest-->
 {% for order in user.orders|reverse %}
@@ -127,7 +119,7 @@
         {% set tmp_tags = order.id|string + '_tag' %}
         <p hidden>{{ lst_dates.append([order.id, tmp_date]) }}</p>
         <br />
-        <div class="blackLine" style="width: 100%">
+        <div class="past_orders" style="width: 100%">
             <div class="text">
                 <h3 id="{{ tmp_tags }}"></h3>
                 <table id="table_{{ order.id }}" style="width:95%">
@@ -154,13 +146,13 @@
                                     <td>{{ count.value }}</td>
                                     {% set tmp = (item.price | float) %}
                                     <td>{{ "${:,.2f}".format(count.value * tmp) }}</td>
-                                    <td hidden>{{ item.description }}</td>
+                                    <td hidden>{{ item.item_id }}</td>
                                 </tr>
                                 <br />
                             {% endif %}
                             {% set print_once = 1 %}
                             <div hidden>
-                            {{ lst.append(item.name) }}
+                                {{ lst.append(item.name) }}
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -171,7 +163,7 @@
                     <div>Order Comment: {{ order.comment }}</div>
                 {% endif %}
                 <br />
-                <button onclick="testOrderAgain({{ order.id }})" class="btn-add">Order Again</button>
+                <button onclick="orderAgain({{ order.id }})" class="btn-add">Order Again</button>
             </div>
         </div>
     {% endif %}
