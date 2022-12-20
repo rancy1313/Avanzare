@@ -204,7 +204,7 @@ def complete_order():
     db.session.add(new_order)
     db.session.commit()
     # get the list of items in format name*quantity*price*item_id#name*quantity*price*item_id#....
-    items = items_list[0]['listOfItem'].split('#')
+    items = items_list[0]['string_list'].split('#')
     # the # separates each item
     for item in items:
         # the * separates the item's info
@@ -226,12 +226,12 @@ def complete_order():
 
 
 # this function takes the order's details and passes it to the order page for the user order the same things again
-@views.route('/orderAgain/<string_list>/<total>/<taxes>', methods=['POST', 'GET'])
-def order_again(string_list, total, taxes):
+@views.route('/orderAgain/<string_list>', methods=['POST', 'GET'])
+def order_again(string_list):
     items = Menu.query.all()
     # string list has the info of the past order
     # separate total and taxes with '^' char because that is how js splits the string
-    new_order = [string_list + '^' + total + '^' + taxes]
+    new_order = [string_list]
     return render_template("order.html", items=items, new_order=new_order, user=current_user)
 
 

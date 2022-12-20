@@ -15,6 +15,8 @@ auth = Blueprint('auth', __name__)
 # star page is where people can see the menu without making an account
 @auth.route('/', methods=['GET'])
 def start_page():
+    # get all menu items
+    items = Menu.query.all()
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     # if db is deleted then we have to manually create the first user
     # first user is the headChef
@@ -25,12 +27,9 @@ def start_page():
         new_user = User(email="headChef@gmail.com", first_name="Rance", password=generate_password_hash("pasta123", method="sha256"))
         db.session.add(new_user)
         db.session.commit()
-        items = Menu.query.filter_by(user_id=new_user.id).order_by(Menu.name).all()
         return render_template("start_page.html", items=items, user=current_user)
     # if there are any news created by the chef then retrieve them to show in featured section
     news = db.session.query(News).order_by(News.id.desc()).all()
-    # fetch all menu items for menu
-    items = Menu.query.filter_by(user_id=user.id).order_by(Menu.name).all()
     # I only want to show a couple of featured news posts so this loop randomly chooses five to pass to start page
     # counts to five and breaks loop when 5 are selected
     # everytime the start page is selected, random news posts are shown
@@ -41,13 +40,16 @@ def start_page():
         count += 1
         if count == 5:
             break
-    #news = News.query.filter_by(featured="TRUE").order_by(News.featured).all()
+    # get all the news that were randomly selected. We do not commit here so that different news shows up everytime
+    news = News.query.filter_by(featured="TRUE").order_by(News.featured).all()
     return render_template("start_page.html", news=news, items=items, user=current_user)
 
 # type url 127.0.0.1:5000/login
 # login to make an order and view past orders
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    # fetch all emnu items
+    items = Menu.query.all()
     # if db reset this user might not exist, so this is here to create user just in case
     user = User.query.filter(User.email == 'headChef@gmail.com').first()
     if not user:
@@ -55,7 +57,6 @@ def login():
                         password=generate_password_hash("pasta123", method="sha256"))
         db.session.add(new_user)
         db.session.commit()
-        items = Menu.query.filter_by(user_id=new_user.id).order_by(Menu.name).all()
         return render_template("start_page.html", items=items, user=current_user)
     # this function renders login.html if method == get and logs in user if method == post
     if request.method == 'POST':
@@ -87,6 +88,7 @@ def login():
             flash('Email does not exist.', category="error")
     return render_template("login.html", user=current_user)
 
+
 # type url 127.0.0.1:5000/logout
 @auth.route('/logout')
 # can't access this route unless user is logged in
@@ -96,7 +98,8 @@ def logout():
     logout_user()
     return redirect(url_for('auth.start_page'))
 
-#sign-up is a POST request because you're adding an account
+
+# sign-up is a POST request because you're adding an account
 # type url 127.0.0.1:5000/sign-up
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
@@ -117,7 +120,7 @@ def sign_up():
             if char in first_name:
                 flash('No special chars allowed in First name (except \' ).', category="error")
                 return redirect(url_for('auth.sign_up'))
-        # umm might need more password restrictions
+        # might need more password restrictions
         # I will consider making better password restriction in the future
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
@@ -143,7 +146,7 @@ def sign_up():
             new_user = User(email=email, first_name=first_name, password=generate_password_hash(password1, method="sha256"))
             db.session.add(new_user)
             db.session.commit()
-            #login_user(user, remember=True)
+            # login_user(user, remember=True)
             flash('Account created!!! You can login now!!', category="success")
             return redirect(url_for('auth.login'))
     return render_template("sign_up.html", user=current_user)

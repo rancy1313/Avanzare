@@ -60,10 +60,8 @@
                     {% endif %}
                 {% endfor %}
             </table>
-            {% set tmp_tag_taxes = 'displayed_taxes_' + order.id|string %}
-            <h3>Taxes: $<p id="{{ tmp_tag_taxes }}" style="display: inline;">{{ order.taxes }}</p></h3>
-            {% set tmp_tag_total = 'displayed_total_' + order.id|string %}
-            <h3>Total: $<p id="{{ tmp_tag_total }}" style="display: inline;">{{ order.total }}</p></h3>
+            <h3>Taxes: ${{ order.taxes }}</h3>
+            <h3>Total: ${{ order.total }}</h3>
             {% if order.comment != "" and order.comment is not none %}
                 <div>Order Comment: {{ order.comment }}</div>
             {% endif %}
@@ -157,8 +155,8 @@
                         {% endif %}
                     {% endfor %}
                 </table>
-                <h3>Taxes: $<p id="displayed_taxes_{{ order.id }}" style="display: inline;">{{ order.taxes }}</p></h3>
-                <h3>Total: $<p id="displayed_total_{{ order.id }}" style="display: inline;">{{ order.total }}</p></h3>
+                <h3>Taxes: ${{ order.taxes }}</h3>
+                <h3>Total: ${{ order.total }}</h3>
                 {% if order.comment != "" and order.comment is not none %}
                     <div>Order Comment: {{ order.comment }}</div>
                 {% endif %}

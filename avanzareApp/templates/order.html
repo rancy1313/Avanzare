@@ -12,7 +12,7 @@
     <button class="btn-edit" id="order">Clear Order</button>
 </form>
 {% if new_order %}
-    <body onload="loadPastOrder({{ new_order|safe }})"></body>
+    <body onload="loadNewOrder({{ new_order|safe }})"></body>
 {% endif %}
 <table id="actual_order" style="width:100%">
     <tr>

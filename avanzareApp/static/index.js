@@ -1,3 +1,4 @@
+// this function deletes news posts and redirects to create news
 function deleteNewsPost(news_postId) {
   fetch("/delete-news-post", {
     method: "POST",
@@ -5,18 +6,29 @@ function deleteNewsPost(news_postId) {
   }).then((_res) => {
     window.location.href = "/create-news";
   });
-} ///this will refresh the page after deletes
+} // this will refresh the page after deletes
 
+
+/* This function makes a list of the items that the user is trying to submit from their order and passes it to the
+   pass list to backend function. */
 function makeList() {
+    // gets total to make sure user isn't trying to submit an empty order
     total = document.getElementById('displayed_total').innerText;
     if (total != 0) {
         let string_list = '';
+        // get the table from order page with the order info
         const table = document.getElementById('actual_order');
+        // every row (mines the heading row) has an item/quantity/price
         var table_rows = table.getElementsByTagName('tr');
+        // loop through every row
         for (let i = 1; i < table_rows.length; i++) {
+            // get each td tag in the row to get the name/quantity/price
             var table_data = table_rows[i].getElementsByTagName('td');
+            // loop through td tag
             for (let x = 0; x < table_data.length; x++) {
+                // we want 0/name, 1/quantity, and 4/item_id
                 if (x == 0 || x == 1 || x == 4) {
+                    // if x == 4 the we do not want to add a * because a # is gonna be added instead to separate row
                     if (x != 4) {
                         string_list += table_data[x].innerText + '*';
                     } else {
@@ -24,62 +36,75 @@ function makeList() {
                     }
                 }
             }
+            // add # to separate the row
             if (i != table_rows.length - 1) {
                 string_list += "#"
             }
         }
+        // get taxes
         taxes = document.getElementById('displayed_taxes').innerText;
+        // get comments
         comment = document.getElementById('comment').value;
-        passListToFlask(string_list, total, taxes, comment);
+        // time to pass info to the back end
+        fetch("/complete-order", {
+            method: "POST",
+            body: JSON.stringify({ values: [{ string_list: string_list }, { total: total }, { taxes: taxes }, { comment: comment }] }),
+        }).then((_res) => {
+            window.location.href = "/user-home";
+        });
     }
 }
 
-function passListToFlask(listOfItem, total, taxes, comment) {
-    fetch("/complete-order", {
-        method: "POST",
-        body: JSON.stringify({ values: [{ listOfItem: listOfItem }, { total: total }, { taxes: taxes }, { comment: comment }] }),
-    }).then((_res) => {
-        window.location.href = "/user-home";
-    });
-}
-
+// this function takes the info of the past order that the user is trying to order again and sends it to back end order
+// again function
 function orderAgain(order_id) {
     let string_list = '';
+    // get the specific table that the has the past order info
     const order_table = document.getElementById(`table_${order_id}`);
+    // get each row(minus header row) that shows each item's info
     var table_rows = order_table.getElementsByTagName('tr');
+    // loop through the rows
     for (let i = 1; i < table_rows.length; i++) {
+        // each td represents an item detail such as name/quantity/price/item_id
         var table_data = table_rows[i].getElementsByTagName('td');
         for (let x = 0; x < table_data.length; x++) {
+            // instead of putting an * for the final element we put a ^
             if (x != 3) {
+                // each * separates the item's info
                 string_list += table_data[x].innerText + '*';
             } else {
                 string_list += table_data[x].innerText;
             }
         }
+        // each ^ separates the items
         if (i != table_rows.length - 1) {
             string_list += "^"
         }
     }
-    taxes = document.getElementById('displayed_taxes_' + order_id).innerText;
-    total = document.getElementById('displayed_total_' + order_id).innerText;
-    window.location.href = `/orderAgain/${string_list}/${total}/${taxes}`;
+    // send the info to the backend
+    window.location.href = `/orderAgain/${string_list}`;
 }
 
-function loadPastOrder(new_order) {
+// this function is called when the page is loaded. It is loading a new order with the details of the past order
+function loadNewOrder(new_order) {
+    // new_order is a list with a string inside. The string has the order's info
+    // split new_order string by ^ to get every row. A row has item/quantity/price
     const new_order_items = new_order[0].split('^');
-    let taxes = new_order_items.pop();
-    let total = new_order_items.pop();
+    // loop through each row
     for (let i = 0; i < new_order_items.length; i++) {
+        // split to get each item's info
         const individual_item = new_order_items[i].split('*')
+        // set price
         let price = individual_item[2].slice(1, individual_item[2].length)
         price = price / individual_item[1];
+        // get the order total to update it
         order_total = document.getElementById('total').value;
+        // call add to order function to add each row to the table
         addToOrder(individual_item[1], individual_item[3], individual_item[0], price, 'REGULAR', order_total)
     }
-    document.getElementById('displayed_total').innerText = total;
-    document.getElementById('displayed_taxes').innerText = taxes;
 }
 
+// this will load the dates of the orders in a better format
 function loadDates(lst_dates) {
     for (let i = 0; i < lst_dates.length; i++) {
         var tag = lst_dates[i][0].toString() + '_tag';
@@ -114,6 +139,7 @@ function blueprint(item_id) {
     edit_button.setAttribute('hidden', true);
 }
 
+// close the edit page blueprint
 function closeBlueprint(item_id) {
     // get the edit page for the item being edited
     const edit_page = document.getElementById('hidden_' + item_id);
@@ -134,11 +160,17 @@ function addToOrder(quantity, item_id, item_name, item_price, item_accommodation
             item_name = item_accommodation + ' ' + item_name;
         }
         let tmp_price = item_price * quantity;
+        // we get the row by item name because I want to keen items that are the same but have different accommodations
+        // separate.
         const table_row = document.getElementById(`row_${item_name}`);
+        // if table is null then that item has not been ordered yet and we can make a row for it
         if (table_row === null) {
+            // get table
             const order = document.getElementById('actual_order');
+            // create a new row for the item
             const tmp_item = document.createElement('tr');
             tmp_item.setAttribute('id', `row_${item_name}`);
+            // this is to format the delete by quantity field for each item
             tmp_item.innerHTML = `
                 <td>${item_name}</td>
                 <td >${quantity}</td>
@@ -163,6 +195,7 @@ function addToOrder(quantity, item_id, item_name, item_price, item_accommodation
             // set taxes
             document.getElementById('displayed_taxes').innerText = (parseFloat(total.toFixed(2)) * 0.0625).toFixed(2);
         } else {
+            // the item has been ordered already and we just want to add to the price and quantity of that row
             var descendants = table_row.getElementsByTagName('*');
             let tmp = descendants[2].innerText.slice(1, descendants[2].innerText.length);
             descendants[1].innerText = parseInt(quantity) + parseInt(descendants[1].innerText);
