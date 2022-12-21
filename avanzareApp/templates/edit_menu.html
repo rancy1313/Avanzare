@@ -34,7 +34,7 @@
                 id="description"
                 name="description"
                 placeholder="ENTER DISH DESCRIPTION"
-                pattern="[a-zaA-Z0-9\s',\.]{2,800}"
+                pattern="[a-zaA-Z0-9\s',&\.]{2,800}"
         />
     </div>
     <label for="gluten_free"><b>Gluten Free Availability</b></label>
@@ -82,30 +82,18 @@
     <!-- It loops through the menu types and only shows a header for each type once and displays menu item if menu type matches-->
     <h1 class="h1Color" align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" id="items">
-        {% set print_once = 1 %}
         {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
-            {% if print_once == 1 %}
-                {% if menu == "DESSERT MENU" %}
-                    <h1 class="h1Color" align="center"> DESSERTS </h1>
-                    {% set print_once = 0 %}
-                {% elif menu == "AFTER DINNER DRINKS" %}
-                    <h1 class="h1Color" align="center"> AFTER DINNER DRINKS </h1>
-                    {% set print_once = 0 %}
-                {% elif menu == "COCKTAILS" %}
-                    <h1 class="h1Color" align="center"> COCKTAILS </h1>
-                    {% set print_once = 0 %}
-                {% elif menu == "BOTTLE" %}
-                    <h1 class="h1Color" align="center"> BEER </h1>
-                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
-                    {% set print_once = 0 %}
+                {% if menu in ["DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS"] %}
+                    <h1 class="h1Color" align="center"> {{ menu }} </h1>
                 {% else %}
                     <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% if menu == "PIZZAS" %}
                         <p class="menu_type_color" align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
+                    {% elif menu == "BOTTLE" %}
+                        <h1 class="h1Color" align="center"> BEER </h1>
+                        <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% endif %}
-                    {% set print_once = 0 %}
                 {% endif %}
-            {% endif %}
             <!-- Items are all the menu items, made by headChef -->
             {% for item in items %}
                 {% if item.menu_type == menu %}
@@ -143,8 +131,6 @@
                     </li>
                 {% endif %}
             {% endfor %}
-            {% set print_once = 1 %}
-        <!-- print once var resets after nested loop goes through all items on the menu -->
         {% endfor %}
     </ul>
     <br />

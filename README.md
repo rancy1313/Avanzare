@@ -69,8 +69,8 @@ on the featured section of the start page and on all the users' home pages.
 
 # To do list
 
-- filter feature to filter orders by specific details 
-- display order and user info data in a chart??
+- filter feature to filter orders by specific details
 - go back and make some technical fixes(optimization)
 - feature to let the head chef view accounts
 - there is currently no payment method option(I didn't add this because there were so many ways to design this)
+- search menu by text(item name, ingredient)

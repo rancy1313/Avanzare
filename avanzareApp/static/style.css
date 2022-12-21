@@ -1,32 +1,35 @@
+/* used in edit page to format price inpout field */
 .currencyinput {
     border: 1px inset #ccc;
 }
 .currencyinput input {
     border: 0;
 }
+/* nav bar color */
 .navbar-dark {
     background:#CE5B54;
 }
+/* black line used multiple times */
 .blackLine {
     border:1px solid black;
     border-color: #800000;
     padding: 15px;
 }
-
+/* format for active orders in view orders/user home */
 .active_orders {
     border:1px solid black;
     border-color: #800000;
     padding: 25px;
     background-color: #f3fce6;
 }
-
+/* format for past orders in view orders/user home */
 .past_orders {
     border:1px solid black;
     border-color: #800000;
     padding: 25px;
     background-color: #f0f4ff;
 }
-
+/* used to format menu */
 .container2 {
     margin: 10px;
     display: flex;
@@ -34,27 +37,31 @@
     justify-content: center
     background-color: #CE9854;
 }
-
+/* used to format most text for menus */
 .text {
     font-size: 20px;
     padding-left: 40px;
     width: 80%;
 }
+
 nav{
     height:150px;
 }
+/* image border */
 .image {
     border: solid;
     border-width: 2px;
     border-color: #800000;
 }
-
+/* used as background color of items in menu */
 .list-group-item {
     background-color: #FADBB4;
 }
+/* menu sub header color */
 .menu_type_color {
     background-color: #F4FA99;
 }
+/* main menu color */
 .h1Color {
     background-color: #FD948E;
 }

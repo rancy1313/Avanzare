@@ -9,7 +9,7 @@
 <form action="/edit-menu-item/{{ item.id }}" method="POST" enctype="multipart/form-data">
     <h3 align="center">Edit menu information</h3>
     <label for="name"><b>Name: <i>{{item.name}}</i></b></label>
-    <input type="name"
+    <input
            class="form-control"
            id="name"
            name="name"
@@ -17,15 +17,18 @@
            pattern="[a-zaA-Z\s',\.]{2,30}"
            required>
     <label for="price"><b>Price: <i>{{item.price}}</i></b></label>
-    <input type="price"
-           class="form-control"
+    <br />
+    <b>$</b>
+    <input
+           class="currencyinput"
            id="price"
            name="price"
            value="{{item.price}}"
            pattern="\d{1,3}(,\d{3})*(\.\d+)"
            required>
+    <br />
     <label for="description"><b>Description: <i>{{item.description}}</i></b></label>
-    <textarea   type="description"
+    <textarea
                 class="form-control"
                 id="description"
                 name="description"
@@ -33,7 +36,7 @@
                 required>{{item.description}}</textarea>
 
     <label for="gluten_free"><b>Gluten Free Availability: <i>{{ item.gluten_free }}</i></b></label>
-    <select class="selectpicker selectLength" type="gluten_free" id="gluten_free" name="gluten_free">
+    <select class="selectpicker selectLength" id="gluten_free" name="gluten_free">
         <option selected>{{ item.gluten_free }}</option>
         {% if item.gluten_free == 'GLUTEN FREE' %}
             <option>NO</option>

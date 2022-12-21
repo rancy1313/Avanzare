@@ -29,31 +29,19 @@
       price, description, dish_accommodation, and picture -->
     <h1 class="h1Color" align="center"> DINNER MENU </h1>
     <ul class="list-group list-group-flush" >
-        <!-- print once is used to print each menu type once and resets after each parent loop iteration -->
-        {% set print_once = 1 %}
         {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS", "BOTTLE", "DRAFT"] %}
-            {% if print_once == 1 %}
-                {% if menu == "DESSERT MENU" %}
-                    <h1 class="menu_type_color" align="center"> DESSERTS </h1>
-                    {% set print_once = 0 %}
-                {% elif menu == "AFTER DINNER DRINKS" %}
-                    <h1 class="menu_type_color" align="center"> AFTER DINNER DRINKS </h1>
-                    {% set print_once = 0 %}
-                {% elif menu == "COCKTAILS" %}
-                    <h1 class="menu_type_color" align="center"> COCKTAILS </h1>
-                    {% set print_once = 0 %}
-                {% elif menu == "BOTTLE" %}
-                    <h1 class="menu_type_color" align="center"> BEER </h1>
-                    <h4 class="menu_type_color" align="center">{{ menu }}</h4>
-                    {% set print_once = 0 %}
+                <!-- if prime menu then pink else yellow -->
+                {% if menu in ["DESSERT MENU", "AFTER DINNER DRINKS", "COCKTAILS"] %}
+                    <h1 class="h1Color" align="center"> {{ menu }} </h1>
                 {% else %}
                     <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% if menu == "PIZZAS" %}
                         <p class="menu_type_color" align="center"><i>"ALL PIZZAS ARE HAND TOSSED AND BAKED IN THE WOOD BURNING OVEN"</i></p>
+                    {% elif menu == "BOTTLE" %}
+                        <h1 class="h1Color" align="center"> BEER </h1>
+                        <h4 class="menu_type_color" align="center">{{ menu }}</h4>
                     {% endif %}
-                    {% set print_once = 0 %}
                 {% endif %}
-            {% endif %}
             {% for item in items %}
                 {% if item.menu_type == menu %}
                     <li class="list-group-item">
@@ -80,7 +68,6 @@
                     </li>
                 {% endif %}
             {% endfor %}
-            {% set print_once = 1 %}
         {% endfor %}
         <br />
     </ul>
@@ -94,14 +81,9 @@
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <ul class="list-group list-group-flush" >
-            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
-            {% set print_once = 1 %}
             <!-- it will display all menu types but only display menu items that have Gluten free as an option -->
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}
-                {% if print_once == 1 %}
-                    <div class="h1Color" align="center">{{ menu }}</div>
-                    {% set print_once = 0 %}
-                {% endif %}
+                <div class="h1Color" align="center">{{ menu }}</div>
                 {% for item in items %}
                     {% if item.menu_type == menu and item.gluten_free == "GLUTEN FREE" %}
                         <li class="list-group-item" align="center">
@@ -120,7 +102,6 @@
                         </li>
                     {% endif %}
                 {% endfor %}
-                {% set print_once = 1 %}
             {% endfor %}
         </ul>
     </div>
@@ -133,7 +114,6 @@
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <ul class="list-group list-group-flush" >
-            {% set DINNER_sub_menus = ["APPETIZERS", "SALADS", "SIDES"] %}
             {% set print_once = 1 %}
             <!-- it will display all menu types but only display menu items that have vegan as an option -->
             {% for menu in ["APPETIZERS", "SALADS", "PIZZAS", "PASTAS", "ENTREES", "SIDES", "DESSERT MENU", "COCKTAILS"] %}

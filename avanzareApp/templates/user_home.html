@@ -60,8 +60,8 @@
                     {% endif %}
                 {% endfor %}
             </table>
-            <h3>Taxes: ${{ order.taxes }}</h3>
-            <h3>Total: ${{ order.total }}</h3>
+            <h3>Taxes: {{ "${:,.2f}".format(order.taxes) }}</h3>
+            <h3 title="Taxes included.">Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
             {% if order.comment != "" and order.comment is not none %}
                 <div>Order Comment: {{ order.comment }}</div>
             {% endif %}
@@ -155,8 +155,8 @@
                         {% endif %}
                     {% endfor %}
                 </table>
-                <h3>Taxes: ${{ order.taxes }}</h3>
-                <h3>Total: ${{ order.total }}</h3>
+                <h3>Taxes: {{ "${:,.2f}".format(order.taxes) }}</h3>
+                <h3 title="Taxes included.">Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
                 {% if order.comment != "" and order.comment is not none %}
                     <div>Order Comment: {{ order.comment }}</div>
                 {% endif %}

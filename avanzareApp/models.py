@@ -19,6 +19,7 @@ class Menu(db.Model):
     item_image = db.Column(db.String(30))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+
 # this class is for the user to add an item to an order
 # At first, I found it best to separate menu items for orders and menu items for editing the menu because
 # the menu order didn't require a user id and the Menu item for editing didn't require an order id
@@ -27,7 +28,7 @@ class Menu(db.Model):
 # MENU_ORDER WAS CREATED BECAUSE MENU ITEMS ARE SUPPOSED TO BE UNIQUE SO YOU WOULDN'T BE ABLE TO CREATE COPIES
 # WHICH WOULD BE NEEDED IF YOU'RE TRYING TO ORDER MORE THAN ONE OF THE SAME ITEM
 # so keeping Menu_order and Menu separate is still viable
-class Menu_order(db.Model):
+class MenuOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     price = db.Column(db.String(150))
@@ -53,7 +54,7 @@ class Order(db.Model):
     # stores menu items??
     # too solutions use the relationship list by using a new Menu db with no primary kery for name
     # private list variable??
-    items = db.relationship('Menu_order')
+    items = db.relationship('MenuOrder')
 
 # this class is for the chef to create news posts
 class News(db.Model):

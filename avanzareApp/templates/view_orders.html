@@ -59,17 +59,8 @@
                     {% endif %}
                 {% endfor %}
             </table>
-            {% if "${:,.2f}".format(order.taxes) == "$-0.00" %}
-               <b>Taxes: $0.00</b>
-            {% else %}
-                <b>Taxes: {{ "${:,.2f}".format(order.taxes) }}</b>
-            {% endif %}
-            <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-            {% if "${:,.2f}".format(order.total + order.taxes) == "$-0.00" %}
-               <h3>Total: $0.00</h3>
-            {% else %}
-                <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
-            {% endif %}
+            <b>Taxes: {{ "${:,.2f}".format(order.taxes) }}</b>
+            <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
             <!-- only show order comment if there is one -->
             {% if order.comment != "" and order.comment is not none %}
                 <div>Order Comment: {{ order.comment }}</div>
@@ -139,17 +130,9 @@
                     {% endif %}
                 {% endfor %}
             </table>
-            {% if "${:,.2f}".format(order.taxes) == "$-0.00" %}
-               <b>Taxes: $0.00</b>
-            {% else %}
-                <b>Taxes: {{ "${:,.2f}".format(order.taxes) }}</b>
-            {% endif %}
-            <!-- This if statement is needed to fix $-0.00 bug when clicking too fast -->
-            {% if "${:,.2f}".format(order.total + order.taxes) == "$-0.00" %}
-               <h3>Total: $0.00</h3>
-            {% else %}
-                <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
-            {% endif %}
+
+            <b>Taxes: {{ "${:,.2f}".format(order.taxes) }}</b>
+            <h3>Total: {{ "${:,.2f}".format(order.total + order.taxes) }}</h3>
             <!-- only show order comment if there is one -->
             {% if order.comment != "" and order.comment is not none %}
                 <div>Order Comment: {{ order.comment }}</div>

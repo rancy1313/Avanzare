@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, abort, jsonify, redirect, url_for, send_from_directory
 from flask_login import login_required, current_user
-from .models import Menu, User, Order, Menu_order, News
+from .models import Menu, Order, MenuOrder, News
 from . import db
 import json
 import os
@@ -212,7 +212,7 @@ def complete_order():
         for quantity in range(int(tmp_item[1])):
             # create a menu object to get the rest of the item's info
             menu_item = Menu.query.filter_by(id=tmp_item[2]).first()
-            tmp_item_object = Menu_order()  # change Menu_order to MenuOrder
+            tmp_item_object = MenuOrder()
             # save objects details
             tmp_item_object.name = tmp_item[0]
             tmp_item_object.price = menu_item.price
